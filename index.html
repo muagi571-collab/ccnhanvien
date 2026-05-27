@@ -60,14 +60,14 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;backgroun
 .form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:15px;font-family:inherit;color:var(--text);transition:border-color .2s;outline:none;-webkit-appearance:none}
 .form-input:focus{border-color:var(--accent)}.form-input::placeholder{color:var(--text3)}
 /* NV GRID */
-.nv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:36vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:2px}
+.nv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;max-height:30vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:2px}
 .nv-grid::-webkit-scrollbar{width:2px}.nv-grid::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.sel-item{background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;padding:7px 5px;text-align:center;cursor:pointer;transition:all .12s;font-family:inherit;color:var(--text2);position:relative}
+.sel-item{background:var(--bg3);border:1.5px solid var(--border);border-radius:7px;padding:5px 4px;text-align:center;cursor:pointer;transition:all .12s;font-family:inherit;color:var(--text2);position:relative;font-size:12px}
 .sel-item:active{transform:scale(.95)}
 .sel-item.sel{border-color:var(--accent);background:rgba(232,162,78,.14);color:var(--accent)}
 .sel-item.busy-nv{opacity:.45;cursor:not-allowed}
-.sel-item .si-name{font-size:11px;font-weight:700;display:block;margin-bottom:1px;color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sel-item .si-sub{font-size:9px;color:var(--text3)}
+.sel-item .si-name{font-size:10px;font-weight:700;display:block;margin-bottom:1px;color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sel-item .si-sub{font-size:8px;color:var(--text3)}
 .sel-item.sel .si-sub{color:var(--accent2)}
 .sel-check{position:absolute;top:3px;right:3px;width:12px;height:12px;border-radius:50%;background:var(--accent);display:none;align-items:center;justify-content:center}
 .sel-item.sel .sel-check{display:flex}
@@ -635,8 +635,6 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 let selNvIds=new Set(),selPhongId=null,allNVs=[],allPhong=[];
 let currentWeekTab='hientai',chotNvId=null,chotWeekKey=null;
 let liveTimer=null,drumTarget=null;
-// Lưu các log đã xác nhận (tích ô) — persist qua localStorage
-let confirmedLogIds=new Set(JSON.parse(localStorage.getItem('confirmed_logs')||'[]'));
 
 // ═══ CLOCK ═══
 function updateClock(){
@@ -1050,8 +1048,8 @@ function renderGroup(container,grp,isHist){
       <div class="log-body"><div class="log-room">${esc(log.phongTen)}</div><div class="log-times">${log.inTime} → ${log.outTime}</div><div class="log-hrs">${fmtHrs(log.minutes)}</div></div>
       <div class="log-money-col">${fmtMoney(log.money)}</div>
       <div class="log-confirm-wrap">
-        <input type="checkbox" class="log-confirm-cb" id="cb-${log.id}" onchange="toggleLogConfirm(this,'${log.id}')"${confirmedLogIds.has(log.id)?' checked':''}>
-        <div class="log-confirmed-label" id="cblbl-${log.id}" style="display:${confirmedLogIds.has(log.id)?'block':'none'}">✓ Xác nhận</div>
+        <input type="checkbox" class="log-confirm-cb" id="cb-${log.id}" onchange="toggleLogConfirm(this,'${log.id}')"${log.confirmed?' checked':''}>
+        <div class="log-confirmed-label" id="cblbl-${log.id}" style="display:${log.confirmed?'block':'none'}">✓ Xác nhận</div>
       </div>
       <div class="log-actions">
         <button class="btn-icon" onclick="openEditLog('${log.id}')" aria-label="Sửa"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
@@ -1088,8 +1086,7 @@ async function deleteAllLogsCurrentTab(){
   const q=(document.getElementById('luong-search')?.value||'').toLowerCase().trim();
   if(q)toDelete=toDelete.filter(l=>l.nvTen.toLowerCase().includes(q));
   if(!toDelete.length){toast('Không có ca nào để xoá');return;}
-  for(const l of toDelete){await dbDel('logs',l.id);confirmedLogIds.delete(l.id);}
-  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
+  for(const l of toDelete)await dbDel('logs',l.id);
   toast(`🗑️ Đã xoá ${toDelete.length} ca`);
   refreshLuong();autoSync();
 }
@@ -1250,26 +1247,25 @@ async function saveEditSessTime(){
   refreshHD(true);await autoSync();
 }
 
-function toggleLogConfirm(cb,logId){
-  if(cb.checked)confirmedLogIds.add(logId);
-  else confirmedLogIds.delete(logId);
-  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
+async function toggleLogConfirm(cb,logId){
+  const log=await dbGet('logs',String(logId));
+  if(!log)return;
+  log.confirmed=cb.checked;
+  await dbPut('logs',log);
   const lbl=document.getElementById('cblbl-'+logId);
   if(lbl)lbl.style.display=cb.checked?'block':'none';
+  autoSync();
 }
 async function deleteLog(id){
   if(!confirm('Xoá ca làm này?'))return;
   await dbDel('logs',String(id));
-  confirmedLogIds.delete(id);
-  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
   toast('🗑️ Đã xoá');refreshLuong();autoSync();
 }
 async function deleteAllLogsOfNV(nvId,ten){
   if(!confirm(`Xoá tất cả ca của ${ten}?\nThao tác này không thể hoàn tác.`))return;
   const allLogs=await dbAll('logs');
   const toDelete=allLogs.filter(l=>l.nvId===nvId);
-  for(const l of toDelete){await dbDel('logs',l.id);confirmedLogIds.delete(l.id);}
-  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
+  for(const l of toDelete)await dbDel('logs',l.id);
   toast('🗑️ Đã xoá '+toDelete.length+' ca của '+ten);
   refreshLuong();autoSync();
 }
