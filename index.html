@@ -1616,8 +1616,8 @@ function xcGetDropTarget(x,y){for(const zone of['pool','dilam','ditre','nghi']){
 const SB_URL_KEY='sb_url';
 const SB_KEY_KEY='sb_key';
 // ⚠️ Điền URL và anon key Supabase của bạn vào đây sau khi tạo project
-const SB_URL_DEFAULT='SUPABASE_URL_CUA_BAN';
-const SB_ANON_DEFAULT='SUPABASE_ANON_KEY_CUA_BAN';
+const SB_URL_DEFAULT='https://jcrvyuetjqhfxcjfqmqb.supabase.co';
+const SB_ANON_DEFAULT='sb_publishable_mm3IMDrZvwhI1ozH6UZgsQ_mVgge6yn';
 function getSbUrl(){return localStorage.getItem(SB_URL_KEY)||SB_URL_DEFAULT;}
 function getSbKey(){return localStorage.getItem(SB_KEY_KEY)||SB_ANON_DEFAULT;}
 function sbHeaders(){return{'Content-Type':'application/json','apikey':getSbKey(),'Authorization':'Bearer '+getSbKey()};}
