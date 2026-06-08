@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -22,7 +22,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;backgroun
   --accent:#e8a24e;--accent2:#d4894a;--green:#4caf82;--red:#e05c5c;--red2:#c44a4a;--yellow:#f0c040;
   --radius:14px;--radius-sm:9px;--nav-h:62px;
   --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
-  --extra-bot:34px;
+  --extra-bot:20px;
 }
 #app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto}
 #main-content{flex:1;overflow:hidden;padding-top:calc(var(--safe-top));padding-bottom:0;display:flex;flex-direction:column;min-height:0}
@@ -60,14 +60,14 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;backgroun
 .form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:15px;font-family:inherit;color:var(--text);transition:border-color .2s;outline:none;-webkit-appearance:none}
 .form-input:focus{border-color:var(--accent)}.form-input::placeholder{color:var(--text3)}
 /* NV GRID */
-.nv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;max-height:30vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:2px}
+.nv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:36vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:2px}
 .nv-grid::-webkit-scrollbar{width:2px}.nv-grid::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.sel-item{background:var(--bg3);border:1.5px solid var(--border);border-radius:7px;padding:5px 4px;text-align:center;cursor:pointer;transition:all .12s;font-family:inherit;color:var(--text2);position:relative;font-size:12px}
+.sel-item{background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;padding:7px 5px;text-align:center;cursor:pointer;transition:all .12s;font-family:inherit;color:var(--text2);position:relative}
 .sel-item:active{transform:scale(.95)}
 .sel-item.sel{border-color:var(--accent);background:rgba(232,162,78,.14);color:var(--accent)}
 .sel-item.busy-nv{opacity:.45;cursor:not-allowed}
-.sel-item .si-name{font-size:10px;font-weight:700;display:block;margin-bottom:1px;color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sel-item .si-sub{font-size:8px;color:var(--text3)}
+.sel-item .si-name{font-size:11px;font-weight:700;display:block;margin-bottom:1px;color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sel-item .si-sub{font-size:9px;color:var(--text3)}
 .sel-item.sel .si-sub{color:var(--accent2)}
 .sel-check{position:absolute;top:3px;right:3px;width:12px;height:12px;border-radius:50%;background:var(--accent);display:none;align-items:center;justify-content:center}
 .sel-item.sel .sel-check{display:flex}
@@ -635,6 +635,8 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 let selNvIds=new Set(),selPhongId=null,allNVs=[],allPhong=[];
 let currentWeekTab='hientai',chotNvId=null,chotWeekKey=null;
 let liveTimer=null,drumTarget=null;
+// Lưu các log đã xác nhận (tích ô) — persist qua localStorage
+let confirmedLogIds=new Set(JSON.parse(localStorage.getItem('confirmed_logs')||'[]'));
 
 // ═══ CLOCK ═══
 function updateClock(){
@@ -1048,8 +1050,8 @@ function renderGroup(container,grp,isHist){
       <div class="log-body"><div class="log-room">${esc(log.phongTen)}</div><div class="log-times">${log.inTime} → ${log.outTime}</div><div class="log-hrs">${fmtHrs(log.minutes)}</div></div>
       <div class="log-money-col">${fmtMoney(log.money)}</div>
       <div class="log-confirm-wrap">
-        <input type="checkbox" class="log-confirm-cb" id="cb-${log.id}" onchange="toggleLogConfirm(this,'${log.id}')"${log.confirmed?' checked':''}>
-        <div class="log-confirmed-label" id="cblbl-${log.id}" style="display:${log.confirmed?'block':'none'}">✓ Xác nhận</div>
+        <input type="checkbox" class="log-confirm-cb" id="cb-${log.id}" onchange="toggleLogConfirm(this,'${log.id}')"${confirmedLogIds.has(log.id)?' checked':''}>
+        <div class="log-confirmed-label" id="cblbl-${log.id}" style="display:${confirmedLogIds.has(log.id)?'block':'none'}">✓ Xác nhận</div>
       </div>
       <div class="log-actions">
         <button class="btn-icon" onclick="openEditLog('${log.id}')" aria-label="Sửa"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
@@ -1086,7 +1088,8 @@ async function deleteAllLogsCurrentTab(){
   const q=(document.getElementById('luong-search')?.value||'').toLowerCase().trim();
   if(q)toDelete=toDelete.filter(l=>l.nvTen.toLowerCase().includes(q));
   if(!toDelete.length){toast('Không có ca nào để xoá');return;}
-  for(const l of toDelete)await dbDel('logs',l.id);
+  for(const l of toDelete){await dbDel('logs',l.id);confirmedLogIds.delete(l.id);}
+  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
   toast(`🗑️ Đã xoá ${toDelete.length} ca`);
   refreshLuong();autoSync();
 }
@@ -1247,25 +1250,26 @@ async function saveEditSessTime(){
   refreshHD(true);await autoSync();
 }
 
-async function toggleLogConfirm(cb,logId){
-  const log=await dbGet('logs',String(logId));
-  if(!log)return;
-  log.confirmed=cb.checked;
-  await dbPut('logs',log);
+function toggleLogConfirm(cb,logId){
+  if(cb.checked)confirmedLogIds.add(logId);
+  else confirmedLogIds.delete(logId);
+  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
   const lbl=document.getElementById('cblbl-'+logId);
   if(lbl)lbl.style.display=cb.checked?'block':'none';
-  autoSync();
 }
 async function deleteLog(id){
   if(!confirm('Xoá ca làm này?'))return;
   await dbDel('logs',String(id));
+  confirmedLogIds.delete(id);
+  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
   toast('🗑️ Đã xoá');refreshLuong();autoSync();
 }
 async function deleteAllLogsOfNV(nvId,ten){
   if(!confirm(`Xoá tất cả ca của ${ten}?\nThao tác này không thể hoàn tác.`))return;
   const allLogs=await dbAll('logs');
   const toDelete=allLogs.filter(l=>l.nvId===nvId);
-  for(const l of toDelete)await dbDel('logs',l.id);
+  for(const l of toDelete){await dbDel('logs',l.id);confirmedLogIds.delete(l.id);}
+  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
   toast('🗑️ Đã xoá '+toDelete.length+' ca của '+ten);
   refreshLuong();autoSync();
 }
@@ -1350,7 +1354,7 @@ async function shareAnh(nv,logs,weekKey){
 }
 function fallbackDL(blob,fname){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=fname;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),5000);toast('Đã tải ảnh!');}
 
-async function cleanup(){const allLogs=await dbAll('logs');const cut=Date.now()-14*864e5;for(const l of allLogs)if(l.status==='chot'&&l.chotAt&&l.chotAt<cut)await dbDel('logs',l.id);}
+async function cleanup(){/* TẮT TỰ XÓA: đã vô hiệu hóa xóa log cũ sau 14 ngày — giữ toàn bộ lịch sử */}
 
 // ═══ DANH MỤC ═══
 async function refreshDM(){
@@ -1607,10 +1611,16 @@ function xcHighlightDrop(x,y){xcClearHighlights();const t=xcGetDropTarget(x,y);i
 function xcClearHighlights(){['pool','dilam','ditre','nghi'].forEach(k=>document.getElementById('xc-zone-'+k)?.classList.remove('drag-over'));}
 function xcGetDropTarget(x,y){for(const zone of['pool','dilam','ditre','nghi']){const el=document.getElementById('xc-zone-'+zone);if(!el)continue;const r=el.getBoundingClientRect();if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return zone;}return null;}
 
-// ═══ FIREBASE SYNC ENGINE ═══
-const FB_URL_DEFAULT='https://ccnv-a6e00-default-rtdb.asia-southeast1.firebasedatabase.app';
-const FB_URL_KEY='fb_url';
-function getFbUrl(){return localStorage.getItem(FB_URL_KEY)||FB_URL_DEFAULT;}
+// ═══ SUPABASE SYNC ENGINE ═══
+// Thay thế Firebase — không tự xóa data, free tier ổn định, không cần thẻ
+const SB_URL_KEY='sb_url';
+const SB_KEY_KEY='sb_key';
+// ⚠️ Điền URL và anon key Supabase của bạn vào đây sau khi tạo project
+const SB_URL_DEFAULT='SUPABASE_URL_CUA_BAN';
+const SB_ANON_DEFAULT='SUPABASE_ANON_KEY_CUA_BAN';
+function getSbUrl(){return localStorage.getItem(SB_URL_KEY)||SB_URL_DEFAULT;}
+function getSbKey(){return localStorage.getItem(SB_KEY_KEY)||SB_ANON_DEFAULT;}
+function sbHeaders(){return{'Content-Type':'application/json','apikey':getSbKey(),'Authorization':'Bearer '+getSbKey()};}
 
 function setSyncStatus(state){
   const dot=document.getElementById('sync-dot');
@@ -1621,27 +1631,20 @@ function setSyncStatus(state){
   dot.style.background=s.c;lbl.textContent=s.t;lbl.style.color=s.c;
 }
 
-// ── Firebase REST helpers ──
-async function fbGet(path){
-  const r=await fetch(getFbUrl()+path+'.json');
-  if(!r.ok)throw new Error('GET '+r.status);
-  return r.json();
+// ── Supabase REST helpers ──
+async function sbGet(){
+  const r=await fetch(getSbUrl()+'/rest/v1/chamcong?id=eq.main&select=data,updated_at',{headers:sbHeaders()});
+  if(!r.ok)throw new Error('SB GET '+r.status);
+  const rows=await r.json();
+  return rows&&rows.length?rows[0]:null;
 }
-async function fbSet(path,data){
-  const r=await fetch(getFbUrl()+path+'.json',{
-    method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)
+async function sbSet(data){
+  const r=await fetch(getSbUrl()+'/rest/v1/chamcong?id=eq.main',{
+    method:'PATCH',
+    headers:{...sbHeaders(),'Prefer':'return=minimal'},
+    body:JSON.stringify({data,updated_at:new Date().toISOString()})
   });
-  if(!r.ok)throw new Error('PUT '+r.status);
-}
-async function fbPatch(path,data){
-  const r=await fetch(getFbUrl()+path+'.json',{
-    method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)
-  });
-  if(!r.ok)throw new Error('PATCH '+r.status);
-}
-async function fbDel(path){
-  const r=await fetch(getFbUrl()+path+'.json',{method:'DELETE'});
-  if(!r.ok)throw new Error('DEL '+r.status);
+  if(!r.ok)throw new Error('SB SET '+r.status);
 }
 
 // ── Push toàn bộ local lên cloud ──
@@ -1652,19 +1655,17 @@ async function pushToCloud(){
     const nvs=await dbAll('nhanvien'),phong=await dbAll('phong');
     const logs=await dbAll('logs'),sessions=await dbAll('sessions');
     const xcArr=await dbAll('xepca_state');
-    const toObj=arr=>arr.length?arr.reduce((o,x)=>{o[String(x.id)]=x;return o;},{}):null;
-    await fbSet('/chamcong',{
-      nhanvien:toObj(nvs)||{},
-      phong:toObj(phong)||{},
-      logs:toObj(logs)||{},
-      sessions:toObj(sessions)||{},
-      xepca_state:toObj(xcArr)||{},
-      ts:Date.now()
+    const toObj=arr=>arr.reduce((o,x)=>{o[String(x.id)]=x;return o;},{});
+    const ts=Date.now();
+    await sbSet({
+      nhanvien:toObj(nvs),phong:toObj(phong),
+      logs:toObj(logs),sessions:toObj(sessions),
+      xepca_state:toObj(xcArr),ts
     });
-    lastTs=Date.now();
+    lastTs=ts;
     setSyncStatus('ok');
-    console.log('[FB] pushToCloud OK');
-  }catch(e){setSyncStatus('err');console.error('[FB] pushToCloud ERR',e);}
+    console.log('[SB] pushToCloud OK ts='+ts);
+  }catch(e){setSyncStatus('err');console.error('[SB] pushToCloud ERR',e);}
 }
 
 // ── autoSync: push sau mỗi thao tác ──
@@ -1678,37 +1679,31 @@ async function autoSync(){
     const nvs=await dbAll('nhanvien'),phong=await dbAll('phong');
     const logs=await dbAll('logs'),sessions=await dbAll('sessions');
     const xcArr=await dbAll('xepca_state');
-    const toObj=arr=>arr.length?arr.reduce((o,x)=>{o[String(x.id)]=x;return o;},{}):null;
+    const toObj=arr=>arr.reduce((o,x)=>{o[String(x.id)]=x;return o;},{});
     const ts=Date.now();
-    await fbSet('/chamcong',{
-      nhanvien:toObj(nvs)||{},
-      phong:toObj(phong)||{},
-      logs:toObj(logs)||{},
-      sessions:toObj(sessions)||{},
-      xepca_state:toObj(xcArr)||{},
-      ts
+    await sbSet({
+      nhanvien:toObj(nvs),phong:toObj(phong),
+      logs:toObj(logs),sessions:toObj(sessions),
+      xepca_state:toObj(xcArr),ts
     });
-    // Set lastTs = ts vừa push → poll sẽ bỏ qua chính data mình
-    // Máy khác có lastTs nhỏ hơn → sẽ detect thay đổi và pull
     lastTs=ts;
     setSyncStatus('ok');
-    console.log('[FB] autoSync OK ts='+ts+' sess='+sessions.length);
-  }catch(e){setSyncStatus('err');console.error('[FB] autoSync ERR',e);}
+    console.log('[SB] autoSync OK ts='+ts+' sess='+sessions.length);
+  }catch(e){setSyncStatus('err');console.error('[SB] autoSync ERR',e);}
   finally{isSyncing=false;}
 }
 
 // ── Pull từ cloud về local ──
-let lastTs=0; // timestamp cloud lần cuối đã apply
+let lastTs=0;
 
 async function pullAndApply(force=false){
   if(!navigator.onLine){setSyncStatus('offline');return false;}
   try{
-    const data=await fbGet('/chamcong');
-    if(!data)return false;
+    const row=await sbGet();
+    if(!row||!row.data)return false;
+    const data=row.data;
     const cloudTs=data.ts||0;
-    // Nếu ts không mới hơn → bỏ qua
     if(!force&&cloudTs<=lastTs)return false;
-    lastTs=cloudTs;
 
     const toArr=obj=>obj?Object.values(obj):[];
     const cloudNVs=toArr(data.nhanvien);
@@ -1717,24 +1712,46 @@ async function pullAndApply(force=false){
     const cloudSessions=toArr(data.sessions);
     const cloudXC=toArr(data.xepca_state);
 
-    // Ghi đè nhanvien + phong (nguồn cloud là đúng)
+    // ══ BẢO VỆ: không áp cloud nếu cloud trống mà local có dữ liệu ══
+    const localNVs=await dbAll('nhanvien');
+    const localLogs=await dbAll('logs');
+    const cloudIsEmpty=cloudNVs.length===0&&cloudLogs.length===0&&cloudSessions.length===0;
+    const localHasData=localNVs.length>0||localLogs.length>0;
+    if(cloudIsEmpty&&localHasData){
+      console.warn('[SB] Cloud trống nhưng local có dữ liệu → BỎ QUA pull, push local lên');
+      await pushToCloud();
+      return false;
+    }
+
+    // ══ Cloud có ít dữ liệu hơn local đáng kể → không áp ══
+    const localSessions=await dbAll('sessions');
+    const cloudRecordCount=cloudNVs.length+cloudLogs.length+cloudSessions.length;
+    const localRecordCount=localNVs.length+localLogs.length+localSessions.length;
+    if(!force&&localRecordCount>0&&cloudRecordCount<localRecordCount*0.5){
+      console.warn('[SB] Cloud ít dữ liệu hơn local 50% → BỎ QUA pull, push local lên');
+      await pushToCloud();
+      return false;
+    }
+
+    lastTs=cloudTs;
+
+    // ══ Nhanvien + Phong: cloud thắng ══
     {const loc=await dbAll('nhanvien');for(const x of loc)await dbDel('nhanvien',x.id);}
     for(const x of cloudNVs)await dbPut('nhanvien',x);
-
     {const loc=await dbAll('phong');for(const x of loc)await dbDel('phong',x.id);}
     for(const x of cloudPhong)await dbPut('phong',x);
 
-    // Ghi đè logs (nguồn cloud là đúng)
-    {const loc=await dbAll('logs');for(const x of loc)await dbDel('logs',x.id);}
+    // ══ Logs: merge — giữ log local chưa kịp sync ══
+    const localLogMap={};(await dbAll('logs')).forEach(l=>{localLogMap[l.id]=l;});
+    const cloudLogMap={};cloudLogs.forEach(l=>{cloudLogMap[l.id]=l;});
+    for(const id of Object.keys(cloudLogMap)){if(localLogMap[id])await dbDel('logs',id);}
     for(const x of cloudLogs)await dbPut('logs',x);
 
-    // Sessions: cloud là nguồn sự thật (UUID đảm bảo không xung đột)
-    // Ghi đè hoàn toàn - không UNION vì sẽ gây session zombie
+    // ══ Sessions: cloud là nguồn sự thật ══
     {const loc=await dbAll('sessions');for(const x of loc)await dbDel('sessions',x.id);}
     for(const x of cloudSessions)await dbPut('sessions',x);
-    console.log('[FB] Applied '+cloudSessions.length+' sessions from cloud');
 
-    // Xếp ca state
+    // ══ Xếp ca state ══
     {const loc=await dbAll('xepca_state');for(const x of loc)await dbDel('xepca_state',x.id);}
     for(const x of cloudXC)await dbPut('xepca_state',x);
 
@@ -1742,18 +1759,18 @@ async function pullAndApply(force=false){
     allPhong=await dbAll('phong');
     await xcLoadState();
     setSyncStatus('ok');
-    console.log('[FB] pullAndApply OK cloudTs='+cloudTs+' sessions='+cloudSessions.length);
+    console.log('[SB] pullAndApply OK cloudTs='+cloudTs+' sessions='+cloudSessions.length);
     return true;
-  }catch(e){setSyncStatus('err');console.error('[FB] pullAndApply ERR',e);return false;}
+  }catch(e){setSyncStatus('err');console.error('[SB] pullAndApply ERR',e);return false;}
 }
 
-// ── Polling mỗi 2 giây ──
+// ── Polling mỗi 3 giây ──
 let realtimeTimer=null;
 function startRealtime(){
   if(realtimeTimer)clearInterval(realtimeTimer);
   realtimeTimer=setInterval(async()=>{
     if(!navigator.onLine){setSyncStatus('offline');return;}
-    if(isSyncing)return; // đang push thì không pull tránh race condition
+    if(isSyncing)return;
     const changed=await pullAndApply();
     if(changed){
       const active=document.querySelector('.screen.active')?.id;
@@ -1765,7 +1782,7 @@ function startRealtime(){
       updateBadge();
       toast('🔄 Cập nhật',1000);
     }
-  },2000);
+  },3000);
 }
 
 async function syncToCloud(){await pushToCloud();}
@@ -1791,19 +1808,21 @@ async function debugSync(){
   const lnv=await dbAll('nhanvien'),llogs=await dbAll('logs'),lsess=await dbAll('sessions');
   lines.push('📱 LOCAL: '+lnv.length+' NV, '+llogs.length+' logs, '+lsess.length+' sess');
   lines.push('🌐 Online: '+navigator.onLine);
-  lines.push('🔗 '+getFbUrl().replace('https://','').slice(0,35));
+  lines.push('🔗 Supabase: '+getSbUrl().replace('https://','').slice(0,30));
   lines.push('🕐 lastTs: '+new Date(lastTs).toLocaleTimeString('vi'));
   if(navigator.onLine){
     try{
-      const data=await fbGet('/chamcong');
-      if(!data||!data.nhanvien){lines.push('☁️ CLOUD: Trống → PUSH để khởi tạo');}
+      const row=await sbGet();
+      if(!row||!row.data||!row.data.nhanvien){lines.push('☁️ CLOUD: Trống → bấm PUSH để khởi tạo');}
       else{
-        const cnv=Object.values(data.nhanvien||{});
-        const clogs=Object.values(data.logs||{});
-        const csess=Object.values(data.sessions||{});
-        lines.push('☁️ CLOUD: '+cnv.length+' NV, '+clogs.length+' logs, '+csess.length+' sess');
-        lines.push('🕐 Cloud ts: '+new Date(data.ts||0).toLocaleTimeString('vi'));
-        const ok=clogs.length===llogs.length&&csess.length===lsess.length&&cnv.length===lnv.length;
+        const d=row.data;
+        const cnv=Object.values(d.nhanvien||{}).length;
+        const clogs=Object.values(d.logs||{}).length;
+        const csess=Object.values(d.sessions||{}).length;
+        lines.push('☁️ CLOUD: '+cnv+' NV, '+clogs+' logs, '+csess+' sess');
+        lines.push('🕐 Cloud ts: '+new Date(d.ts||0).toLocaleTimeString('vi'));
+        lines.push('📅 Cập nhật: '+new Date(row.updated_at).toLocaleString('vi'));
+        const ok=clogs===llogs.length&&csess===lsess.length&&cnv===lnv.length;
         lines.push(ok?'✅ Khớp':'⚠️ Chưa khớp → bấm PUSH');
       }
     }catch(e){lines.push('❌ '+e.message);}
@@ -1812,15 +1831,17 @@ async function debugSync(){
     +'<div style="margin-top:10px;display:flex;gap:6px">'
     +'<button onclick="pushToCloud().then(()=>debugSync())" style="flex:1;background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">⬆️ PUSH</button>'
     +'<button onclick="syncFromCloud().then(()=>debugSync())" style="flex:1;background:var(--accent);color:#0f1923;border:none;border-radius:7px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">⬇️ PULL</button>'
-    +'<button onclick="changeFbUrl()" style="background:var(--bg4);color:var(--text2);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">🔗 Đổi URL</button>'
+    +'<button onclick="changeSbConfig()" style="background:var(--bg4);color:var(--text2);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">🔗 Đổi URL</button>'
     +'</div>';
 }
-function changeFbUrl(){
-  const url=prompt('Firebase URL mới:',getFbUrl());
-  if(url&&url.startsWith('https://')){
-    localStorage.setItem(FB_URL_KEY,url.trim().replace(/\/$/,''));
-    lastTs=0;toast('✅ Đã đổi URL');debugSync();
-  }
+function changeSbConfig(){
+  const url=prompt('Supabase Project URL:',getSbUrl());
+  if(!url||!url.startsWith('https://'))return;
+  const key=prompt('Supabase Anon Key:',getSbKey());
+  if(!key)return;
+  localStorage.setItem(SB_URL_KEY,url.trim().replace(/\/$/,''));
+  localStorage.setItem(SB_KEY_KEY,key.trim());
+  lastTs=0;toast('✅ Đã lưu cấu hình Supabase');debugSync();
 }
 
 // ═══ SERVICE WORKER ═══
@@ -1830,23 +1851,6 @@ function registerSW(){
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(reg=>reg.unregister());
   });
-}
-
-// Đo khoảng cách browser bar Safari động (visualViewport)
-function measureSafariBrowserBar(){
-  if(!window.visualViewport)return;
-  const gap=window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop;
-  if(gap>10){
-    // Browser bar đang hiện
-    document.documentElement.style.setProperty('--extra-bot', (gap+8)+'px');
-  } else {
-    document.documentElement.style.setProperty('--extra-bot', '34px');
-  }
-}
-if(window.visualViewport){
-  window.visualViewport.addEventListener('resize',measureSafariBrowserBar);
-  window.visualViewport.addEventListener('scroll',measureSafariBrowserBar);
-  setTimeout(measureSafariBrowserBar,200);
 }
 
 // ═══ INIT ═══
@@ -1861,16 +1865,21 @@ async function init(){
   if(navigator.onLine){
     setSyncStatus('syncing');
     try{
-      const cloudData=await fbGet('/chamcong');
-      const cloudHasData=cloudData&&cloudData.nhanvien&&Object.keys(cloudData.nhanvien).length>0;
+      const row=await sbGet();
+      const cloudData=row?row.data:null;
+      const cloudNVCount=cloudData&&cloudData.nhanvien?Object.keys(cloudData.nhanvien).length:0;
+      const cloudLogCount=cloudData&&cloudData.logs?Object.keys(cloudData.logs).length:0;
+      const cloudHasData=cloudNVCount>0||cloudLogCount>0;
+      const localNVCheck=await dbAll('nhanvien');
+      const localLogCheck=await dbAll('logs');
+      const localHasData=localNVCheck.length>0||localLogCheck.length>0;
+
       if(cloudHasData){
-        // Cloud có data → LUÔN pull về, cloud là nguồn chính
         await pullAndApply(true);
         await xcLoadState();
-      } else {
-        // Cloud trống → chỉ push nếu local có nhân viên
-        const localNVs=await dbAll('nhanvien');
-        if(localNVs.length>0)await pushToCloud();
+      } else if(localHasData){
+        console.log('[INIT] Cloud trống, local có dữ liệu → push lên cloud');
+        await pushToCloud();
       }
       allNVs=await dbAll('nhanvien');allPhong=await dbAll('phong');
       await refreshCC();await updateBadge();
