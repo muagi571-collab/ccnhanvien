@@ -3,1899 +3,530 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Chấm Công">
-<meta name="theme-color" content="#0f1923">
-<title>Chấm Công</title>
+<title>Tính Lương</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Be+Vietnam+Pro:wght@400;600;700;800;900&display=swap');
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;font-size:16px}
-body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:#0f1923;color:#e8e0d5;overflow:hidden;position:fixed;width:100%}
+html,body{height:100%;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+
 :root{
-  --bg:#0f1923;--bg2:#172130;--bg3:#1e2d3d;--bg4:#253545;--surface:#192130;
-  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);
-  --text:#e8e0d5;--text2:#a09888;--text3:#5e5a52;
-  --accent:#e8a24e;--accent2:#d4894a;--green:#4caf82;--red:#e05c5c;--red2:#c44a4a;--yellow:#f0c040;
-  --radius:14px;--radius-sm:9px;--nav-h:62px;
-  --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
-  --extra-bot:20px;
+  --bg:#0d1117;
+  --bg2:#161b22;
+  --bg3:#1c2330;
+  --line:rgba(255,255,255,.07);
+  --line2:rgba(255,255,255,.13);
+  --text:#e6edf3;
+  --text2:#8b949e;
+  --text3:#484f58;
+  --amber:#f0a84e;
+  --amber2:#d4893a;
+  --green:#3fb950;
+  --mono:'DM Mono',monospace;
+  --sans:'Be Vietnam Pro',sans-serif;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+  --ITEM:48;
+  --ITEMpx:48px;
+  --VISIBLE:4;
+  --DRUM-H:220px;
+  --LABEL-H:36px;
 }
-#app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto}
-#main-content{flex:1;overflow:hidden;padding-top:calc(var(--safe-top));padding-bottom:0;display:flex;flex-direction:column;min-height:0}
-#main-content::-webkit-scrollbar{display:none}
-/* Screens mặc định scroll dọc */
-.screen{display:none;flex-direction:column;height:100%;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(var(--nav-h) + var(--safe-bot) + var(--extra-bot));padding-top:4px;animation:fadeIn .15s ease}
-.screen.active{display:flex}
-/* Xếp Ca không scroll ngoài — flex fill + overflow ẩn */
-#screen-xepca{overflow:hidden;padding-bottom:0;padding-top:0;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
-/* NAV */
-#bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:calc(var(--nav-h) + var(--safe-bot));background:rgba(10,18,28,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding-top:6px;padding-bottom:var(--safe-bot);z-index:100}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 2px;cursor:pointer;transition:color .2s;color:var(--text3);border:none;background:none;font-family:inherit;position:relative}
-.nav-item.active{color:var(--accent)}.nav-item svg{width:21px;height:21px;stroke-width:1.8}.nav-label{font-size:10px;font-weight:600;letter-spacing:.03em}
-.nav-badge{position:absolute;top:0;right:calc(50% - 22px);background:var(--green);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:8px;padding:0 4px;display:none;align-items:center;justify-content:center}.nav-badge.show{display:flex}
-/* LAYOUT */
-.page-header{padding:calc(var(--safe-top) + 10px) 16px 6px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.page-title{font-size:21px;font-weight:800;letter-spacing:-.03em}.page-subtitle{font-size:12px;color:var(--text2);margin-top:1px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin:0 12px 10px}
-.card-label{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:var(--radius-sm);font-family:inherit;font-weight:700;cursor:pointer;transition:all .15s;-webkit-user-select:none;user-select:none}
-.btn:active{transform:scale(.96)}
-.btn-green{background:var(--green);color:#fff;padding:13px 16px;font-size:15px;width:100%;letter-spacing:.02em}
-.btn-amber{background:var(--accent);color:#0f1923;padding:13px 16px;font-size:15px}
-.btn-primary{background:var(--accent);color:#0f1923;padding:11px 16px;font-size:14px;width:100%}
-.btn-outline{background:transparent;color:var(--text2);border:1px solid var(--border2);padding:9px 14px;font-size:13px}
-.btn-red{background:var(--red);color:#fff;padding:7px 12px;font-size:12px;border-radius:7px}
-.btn-sm{padding:7px 12px;font-size:12px;border-radius:7px}
-.btn-icon{background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:8px;padding:0;flex-shrink:0}
-.btn-icon svg{width:16px;height:16px;stroke-width:2}
-/* FORM */
-.form-group{margin-bottom:11px}
-.form-label{display:block;font-size:11px;font-weight:700;color:var(--text3);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase}
-.form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:15px;font-family:inherit;color:var(--text);transition:border-color .2s;outline:none;-webkit-appearance:none}
-.form-input:focus{border-color:var(--accent)}.form-input::placeholder{color:var(--text3)}
-/* NV GRID */
-.nv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:36vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:2px}
-.nv-grid::-webkit-scrollbar{width:2px}.nv-grid::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.sel-item{background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;padding:7px 5px;text-align:center;cursor:pointer;transition:all .12s;font-family:inherit;color:var(--text2);position:relative}
-.sel-item:active{transform:scale(.95)}
-.sel-item.sel{border-color:var(--accent);background:rgba(232,162,78,.14);color:var(--accent)}
-.sel-item.busy-nv{opacity:.45;cursor:not-allowed}
-.sel-item .si-name{font-size:11px;font-weight:700;display:block;margin-bottom:1px;color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sel-item .si-sub{font-size:9px;color:var(--text3)}
-.sel-item.sel .si-sub{color:var(--accent2)}
-.sel-check{position:absolute;top:3px;right:3px;width:12px;height:12px;border-radius:50%;background:var(--accent);display:none;align-items:center;justify-content:center}
-.sel-item.sel .sel-check{display:flex}
-/* PHONG GRID */
-.phong-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:6px}
-/* TIME PICKER */
-.tp-display{display:flex;align-items:center;justify-content:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:8px 10px;cursor:pointer;transition:border-color .2s;flex:1}
-.tp-display:active{border-color:var(--accent)}
-.tp-seg{font-size:30px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.02em;min-width:50px;text-align:center;padding:2px 4px;border-radius:6px}
-.tp-colon{font-size:26px;font-weight:700;color:var(--text3)}
+
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--text);
+  display:flex;flex-direction:column;
+  align-items:center;
+  min-height:100vh;
+  padding:calc(var(--safe-top) + 16px) 16px calc(var(--safe-bot) + 24px);
+}
+
+/* HEADER */
+.header{
+  width:100%;max-width:460px;
+  padding:0 4px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.header-title{
+  font-size:22px;font-weight:900;letter-spacing:-.04em;
+  background:linear-gradient(135deg,var(--amber),var(--amber2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.date-btn{
+  display:flex;align-items:center;gap:6px;
+  background:var(--bg3);border:1px solid var(--line2);
+  border-radius:10px;padding:8px 12px;cursor:pointer;
+  font-family:var(--mono);font-size:13px;color:var(--text2);
+  position:relative;
+}
+.date-btn input[type=date]{
+  position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;
+  font-size:16px; /* prevents iOS zoom */
+}
+
+/* PICKERS ROW */
+.pickers-row{
+  width:100%;max-width:460px;
+  display:flex;gap:10px;margin-bottom:12px;
+}
+.picker-card{
+  flex:1;background:var(--bg2);
+  border:1px solid var(--line2);border-radius:18px;
+  overflow:hidden;position:relative;
+  height:var(--DRUM-H);
+}
+.picker-title{
+  position:absolute;top:0;left:0;right:0;
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);text-align:center;
+  padding:10px 0 0;
+  z-index:10;pointer-events:none;
+  height:var(--LABEL-H);
+  background:var(--bg2);
+}
+
 /* DRUM */
-.drum-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:flex;align-items:flex-end;justify-content:center}
-.drum-overlay.hidden{display:none}
-.drum-sheet{background:var(--bg2);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:14px 0 calc(14px + var(--safe-bot));animation:slideUp .2s cubic-bezier(.34,1.56,.64,1)}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
-.drum-title{font-size:13px;font-weight:600;color:var(--text2);text-align:center;margin-bottom:4px;letter-spacing:.05em;text-transform:uppercase}
-.drum-col-labels{display:flex}
-.drum-col-labels div{flex:1;text-align:center;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;padding-bottom:3px}
-.drum-cols{display:flex;position:relative;height:200px}
-.drum-col{flex:1;overflow-y:scroll;height:200px;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;padding:78px 0}
-.drum-col::-webkit-scrollbar{display:none}
-.drum-item{height:44px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:var(--text3);scroll-snap-align:center;font-variant-numeric:tabular-nums;cursor:pointer}
-.drum-item.active-item{color:var(--text);font-size:32px;font-weight:800}
-.drum-sel-bar{position:absolute;top:50%;left:12px;right:12px;height:44px;transform:translateY(-50%);background:rgba(232,162,78,.1);border:1.5px solid rgba(232,162,78,.3);border-radius:10px;pointer-events:none;z-index:2}
-.drum-colon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:26px;font-weight:800;color:var(--text);z-index:3;pointer-events:none}
-.drum-actions{display:flex;gap:10px;padding:10px 18px 0;margin-top:4px;border-top:1px solid var(--border)}
-/* BADGE */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
-.badge-amber{background:rgba(232,162,78,.15);color:var(--accent)}.badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
-/* LIVE CARD — group by phòng */
-.room-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin:0 12px 10px;overflow:hidden}
-.room-header{display:flex;align-items:center;padding:11px 14px;cursor:pointer;gap:10px;-webkit-user-select:none;user-select:none}
-.room-header:active{background:rgba(255,255,255,.03)}
-.room-name{font-size:16px;font-weight:800;color:var(--text);flex:1}
-.room-count{font-size:15px;font-weight:700;color:var(--accent);margin-right:4px}
-.room-chevron{width:16px;height:16px;color:var(--text3);transition:transform .2s;flex-shrink:0}
-.room-card.open .room-chevron{transform:rotate(180deg)}
-.room-body{display:none;border-top:1px solid var(--border)}
-.room-card.open .room-body{display:block}
-.sess-row{display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.04);gap:8px}
-.sess-row:last-child{border-bottom:none}
-.sess-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#0f1923;flex-shrink:0}
-.sess-info{flex:1;min-width:0}
-.sess-name{font-size:13px;font-weight:600;color:var(--text)}
-.sess-time{font-size:11px;color:var(--text2);font-variant-numeric:tabular-nums;margin-top:1px}
-.sess-elapsed{font-size:10px;color:var(--text3)}
-.sess-money{font-size:12px;font-weight:700;color:var(--accent);min-width:52px;text-align:right;flex-shrink:0}
-.sess-actions{display:flex;gap:5px;flex-shrink:0}
-.co-btn{background:var(--red);color:#fff;border:none;border-radius:7px;padding:6px 10px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap}
-.co-btn:active{background:var(--red2)}
-.room-footer{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px}
-/* BẢNG LƯƠNG */
-.week-tabs{display:flex;gap:7px;padding:0 12px 10px}
-.week-tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;border-radius:10px;cursor:pointer;border:1.5px solid var(--border);color:var(--text2);background:transparent;font-family:inherit}
-.week-tab.active{background:rgba(232,162,78,.12);border-color:var(--accent);color:var(--accent)}
-.search-wrap{padding:0 12px 8px;position:relative}
-.search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:9px 12px 9px 36px;font-size:14px;font-family:inherit;color:var(--text);outline:none;-webkit-appearance:none}
-.search-input:focus{border-color:var(--accent)}.search-input::placeholder{color:var(--text3)}
-.search-icon{position:absolute;left:22px;top:50%;transform:translateY(-50%);color:var(--text3);width:16px;height:16px;stroke-width:2}
-.wk-label{font-size:10px;color:var(--text3);padding:3px 16px 1px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
-.nv-group-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 16px 3px;border-top:1px solid var(--border);margin-top:3px}
-.nv-group-hdr:first-of-type{border-top:none;margin-top:0}
-.nv-grp-name{font-size:14px;font-weight:700;color:var(--text)}.nv-grp-total{font-size:13px;font-weight:700;color:var(--accent)}
-.log-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);gap:7px}.log-row:last-of-type{border-bottom:none}
-.log-date{font-size:10px;font-weight:700;color:var(--text3);width:30px;text-align:center;line-height:1.4;flex-shrink:0}
-.log-body{flex:1;min-width:0}.log-room{font-size:10px;color:var(--text3);margin-bottom:1px}.log-times{font-size:12px;font-weight:600;color:var(--text2)}.log-hrs{font-size:10px;color:var(--text3);margin-top:1px}
-.log-money-col{font-size:12px;font-weight:700;color:var(--accent);text-align:right;flex-shrink:0;min-width:48px}
-.log-actions{display:flex;gap:4px;flex-shrink:0}
-.total-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0 2px;border-top:1px solid var(--border);margin-top:2px}
-.btn-chot{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0f1923;padding:12px 16px;font-size:14px;font-weight:800;width:100%;border-radius:var(--radius);border:none;letter-spacing:.02em;cursor:pointer;margin-top:10px;font-family:inherit}
-.btn-chot:active{transform:scale(.98)}
-/* DANH MỤC */
-.nv-card{background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:11px}
-.nv-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#0f1923;flex-shrink:0}
-.nv-info{flex:1;min-width:0}.nv-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px}.nv-meta{font-size:11px;color:var(--text3)}
-.nv-actions{display:flex;gap:5px}
-.phong-chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--text2);font-family:inherit}
-.phong-chip .del-x{width:15px;height:15px;border-radius:50%;background:rgba(224,92,92,.15);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;border:none;cursor:pointer;font-family:inherit}
-.phong-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .15s ease}
-.modal-overlay.hidden{display:none}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:16px 16px calc(16px + var(--safe-bot));max-height:88vh;overflow-y:auto;animation:slideUp .2s cubic-bezier(.34,1.56,.64,1)}
-.modal-handle{width:32px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 14px}
-.modal-title{font-size:16px;font-weight:800;color:var(--text);margin-bottom:14px;letter-spacing:-.02em}
-.edit-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-/* NUMBER INPUT - ẩn spinner, hỗ trợ scroll */
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-input[type=number]{-moz-appearance:textfield}
-.time-num{width:52px;background:transparent;border:none;outline:none;font-size:30px;font-weight:700;color:var(--text);text-align:center;font-family:inherit;cursor:ns-resize;user-select:none;-webkit-user-select:none}
-.time-num-sm{width:44px;background:transparent;border:none;outline:none;font-size:22px;font-weight:700;color:var(--text);text-align:center;font-family:inherit;cursor:ns-resize;user-select:none;-webkit-user-select:none}
-/* TOAST */
-#toast{position:fixed;top:calc(var(--safe-top) + 12px);left:50%;transform:translateX(-50%) translateY(-60px);background:var(--bg4);color:var(--text);padding:10px 16px;border-radius:26px;font-size:13px;font-weight:600;z-index:999;transition:transform .25s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;border:1px solid var(--border2);max-width:calc(100% - 32px)}
-#toast.show{transform:translateX(-50%) translateY(0)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;display:inline-block}
-.empty-state{text-align:center;padding:36px 20px;color:var(--text3)}.empty-state svg{width:40px;height:40px;margin-bottom:10px;opacity:.3}.empty-state p{font-size:13px;line-height:1.6}
-/* XẾP CA */
-#xc-wrap{display:flex;flex-direction:column;flex:1;overflow:hidden;gap:0;padding-bottom:calc(var(--nav-h) + var(--safe-bot) + var(--extra-bot))}
-.xc-zone{display:flex;flex-direction:column;padding:0 10px 4px;min-height:0}
-.xc-zone-pool{flex:2}.xc-zone-dilam{flex:5}.xc-zone-ditre{flex:1.5}.xc-zone-nghi{flex:1.5}
-.xc-zone-hdr{display:flex;align-items:center;justify-content:space-between;padding:3px 2px 3px;flex-shrink:0}
-.xc-zone-title{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
-.xc-zone-pool .xc-zone-title{color:var(--text2)}
-.xc-zone-dilam .xc-zone-title{color:var(--green)}
-.xc-zone-ditre .xc-zone-title{color:#f0c040}
-.xc-zone-nghi .xc-zone-title{color:var(--red)}
-.xc-zone-count{font-size:10px;font-weight:700;color:var(--text3)}
-.xc-zone-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;border-radius:10px;border:1.5px solid transparent;padding:5px;min-height:0}
-.xc-zone-body::-webkit-scrollbar{width:2px}.xc-zone-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.xc-zone-pool .xc-zone-body{background:var(--surface);border-color:var(--border)}
-.xc-zone-dilam .xc-zone-body{background:rgba(76,175,130,.07);border-color:rgba(76,175,130,.25)}
-.xc-zone-ditre .xc-zone-body{background:rgba(240,192,64,.07);border-color:rgba(240,192,64,.25)}
-.xc-zone-nghi .xc-zone-body{background:rgba(224,92,92,.07);border-color:rgba(224,92,92,.25)}
-.xc-zone-body.drag-over{border-style:dashed}
-.xc-zone-pool .xc-zone-body.drag-over{border-color:var(--accent);background:rgba(232,162,78,.08)}
-.xc-zone-dilam .xc-zone-body.drag-over{border-color:var(--green);background:rgba(76,175,130,.18)}
-.xc-zone-ditre .xc-zone-body.drag-over{border-color:#f0c040;background:rgba(240,192,64,.18)}
-.xc-zone-nghi .xc-zone-body.drag-over{border-color:var(--red);background:rgba(224,92,92,.18)}
-.xc-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;align-content:start}
-.xc-chip{border-radius:7px;padding:4px 3px;text-align:center;cursor:grab;user-select:none;-webkit-user-select:none;transition:all .12s;border:1.5px solid transparent;touch-action:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:30px;overflow:hidden;}
-.xc-chip:active{transform:scale(.93)}.xc-chip.dragging{opacity:.3}
-.xc-zone-pool .xc-chip{background:var(--bg3);border-color:var(--border);color:var(--text2)}
-.xc-zone-pool .xc-chip:hover{border-color:var(--accent);color:var(--text)}
-.xc-zone-dilam .xc-chip{background:rgba(76,175,130,.08);border-color:rgba(76,175,130,.15);color:rgba(76,175,130,.45)}
-.xc-zone-dilam .xc-chip.active-session{background:rgba(76,175,130,.32);border-color:rgba(76,175,130,.7);color:#7eefc0;box-shadow:0 0 0 1.5px rgba(76,175,130,.5);animation:xcGlowPulse 2s infinite}
-.xc-zone-dilam .xc-chip.done-session{background:rgba(76,175,130,.14);border-color:rgba(76,175,130,.25);color:rgba(76,175,130,.6)}
-.xc-zone-ditre .xc-chip{background:rgba(240,192,64,.08);border-color:rgba(240,192,64,.15);color:rgba(240,192,64,.45)}
-.xc-zone-ditre .xc-chip.active-session{background:rgba(240,192,64,.32);border-color:rgba(240,192,64,.7);color:#ffe080;box-shadow:0 0 0 1.5px rgba(240,192,64,.5);animation:xcGlowPulse 2s infinite}
-.xc-zone-ditre .xc-chip.done-session{background:rgba(240,192,64,.14);border-color:rgba(240,192,64,.25);color:rgba(240,192,64,.6)}
-.xc-zone-nghi .xc-chip{background:rgba(224,92,92,.18);border-color:rgba(224,92,92,.3);color:var(--red)}
-@keyframes xcGlowPulse{0%,100%{opacity:1}50%{opacity:.65}}
-.xc-chip-name{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;font-weight:700;line-height:1.2;width:100%;text-align:center;}
-.xc-chip-timer{display:none;font-size:8.5px;font-weight:600;opacity:.85;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.1;width:100%;text-align:center;}
-.xc-chip.active-session .xc-chip-timer{display:block}
-.xc-drum-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:flex;align-items:flex-end;justify-content:center}
-.xc-drum-overlay.hidden{display:none}
-.xc-drum-sheet{background:var(--bg2);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:14px 0 calc(14px + var(--safe-bot));animation:slideUp .2s cubic-bezier(.34,1.56,.64,1)}
-.xc-drum-title{font-size:14px;font-weight:700;color:var(--text);text-align:center;margin-bottom:2px;padding:0 16px}
-.xc-drum-subtitle{font-size:11px;color:var(--text3);text-align:center;margin-bottom:8px}
-.xc-drum-cols-row{display:flex;position:relative;height:180px}
-.xc-drum-col{flex:1;overflow-y:scroll;height:180px;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;padding:68px 0}
-.xc-drum-col::-webkit-scrollbar{display:none}
-.xc-drum-item{height:44px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:var(--text3);scroll-snap-align:center;font-variant-numeric:tabular-nums;cursor:pointer}
-.xc-drum-item.active-item{color:var(--text);font-size:32px;font-weight:800}
-.xc-drum-sel-bar{position:absolute;top:50%;left:8px;right:8px;height:44px;transform:translateY(-50%);background:rgba(240,192,64,.1);border:1.5px solid rgba(240,192,64,.3);border-radius:10px;pointer-events:none;z-index:2}
-.xc-drum-colon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:26px;font-weight:800;color:var(--text);z-index:3;pointer-events:none}
-.xc-drum-note-area{padding:10px 16px 0}
-.xc-drum-note-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;color:var(--text);outline:none;-webkit-appearance:none;resize:none}
-.xc-drum-note-input:focus{border-color:#f0c040}
-.xc-drum-actions{display:flex;gap:10px;padding:10px 16px 0;margin-top:6px;border-top:1px solid var(--border)}
-/* Log confirm checkbox */
-.log-confirm-wrap{display:flex;align-items:center;gap:4px;flex-shrink:0}
-.log-confirm-cb{width:16px;height:16px;accent-color:var(--green);cursor:pointer;flex-shrink:0}
-.log-confirmed-label{font-size:9px;font-weight:700;color:var(--green);display:none;white-space:nowrap}
-/* Modal sửa giờ ra từng NV */
+.drum-inner{
+  position:absolute;
+  top:var(--LABEL-H);
+  left:0;right:0;
+  bottom:0;
+  display:flex;
+  overflow:hidden;
+}
+
+/* highlight bar */
+.drum-inner::before{
+  content:'';
+  position:absolute;
+  top:50%;left:10px;right:10px;
+  height:var(--ITEMpx);
+  transform:translateY(-50%);
+  background:rgba(240,168,78,.07);
+  border:1px solid rgba(240,168,78,.22);
+  border-radius:10px;
+  pointer-events:none;
+  z-index:5;
+}
+
+/* fade top/bottom */
+.drum-inner::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(to bottom, var(--bg2) 0%, transparent 35%,transparent 65%, var(--bg2) 100%);
+  pointer-events:none;
+  z-index:6;
+}
+
+.drum-col-wrap{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  position:relative;overflow:hidden;
+  touch-action:none;
+}
+.drum-col-label{
+  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);padding:4px 0;flex-shrink:0;
+  z-index:7;
+}
+.drum-track{
+  position:absolute;
+  left:0;right:0;
+  will-change:transform;
+  display:flex;flex-direction:column;align-items:center;
+}
+.drum-item{
+  height:var(--ITEMpx);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);
+  font-size:26px;font-weight:400;
+  color:var(--text3);
+  width:100%;
+  user-select:none;-webkit-user-select:none;
+  flex-shrink:0;
+}
+.drum-item.active{
+  color:var(--text);
+  font-size:34px;
+  font-weight:500;
+}
+
+/* colon */
+.drum-colon{
+  width:24px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:22px;font-weight:700;
+  color:var(--text3);flex-shrink:0;
+  position:relative;z-index:7;
+}
+
+/* GIÁ TIỀN */
+.gia-wrap{
+  width:100%;max-width:460px;
+  display:flex;align-items:stretch;gap:10px;
+  margin-bottom:12px;
+}
+.gia-card{
+  flex:1;background:var(--bg2);
+  border:1px solid var(--line2);border-radius:18px;
+  padding:14px 18px;display:flex;flex-direction:column;gap:6px;
+}
+.gia-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.gia-input-row{display:flex;align-items:center;gap:8px}
+.gia-input{
+  flex:1;background:none;border:none;outline:none;
+  font-family:var(--mono);font-size:22px;font-weight:500;color:var(--text);
+  width:100%;
+  -webkit-appearance:none;
+  font-size:22px; /* prevent iOS zoom (must be ≥16px to avoid zoom but we style bigger) */
+}
+.gia-input::placeholder{color:var(--text3)}
+.gia-unit{font-size:11px;font-weight:700;color:var(--text3);flex-shrink:0}
+
+.night-toggle{
+  background:var(--bg3);border:1px solid var(--line2);border-radius:12px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:6px;
+  cursor:pointer;flex-shrink:0;min-width:72px;align-items:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.night-toggle-icon{font-size:22px;line-height:1}
+.night-toggle-label{font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--text3);text-align:center;text-transform:uppercase}
+
+/* RESULT */
+.result-card{
+  width:100%;max-width:460px;
+  background:var(--bg2);
+  border:1px solid var(--line2);
+  border-radius:18px;
+  padding:16px 18px;
+}
+.result-section{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:4px}
+.result-head{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.result-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:7px 0;border-bottom:1px solid var(--line);
+}
+.result-row:last-child{border-bottom:none}
+.result-label{font-size:12px;color:var(--text2);font-weight:500}
+.result-val{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text)}
+.result-total-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 0 0;
+}
+.result-total-label{font-size:13px;font-weight:700;color:var(--text2)}
+.result-total-val{font-family:var(--mono);font-size:28px;font-weight:500;color:var(--green);letter-spacing:-.02em}
+.result-total-val.empty{color:var(--text3);font-size:18px}
+.night-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(240,168,78,.12);border:1px solid rgba(240,168,78,.25);
+  border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;
+  color:var(--amber);margin-left:6px;vertical-align:middle;
+}
 </style>
 </head>
 <body>
-<div id="app">
-<div id="main-content">
 
-<!-- CHECK IN -->
-<div class="screen active" id="screen-chamcong">
-  <div class="page-header">
-    <div><div class="page-title">Check In</div><div class="page-subtitle" id="today-label"></div></div>
-    <div class="badge badge-amber"><span class="badge-dot"></span><span id="live-time">--:--</span></div>
-  </div>
-  <div class="card">
-    <div class="card-label">Nhân viên <span id="sel-count" style="color:var(--accent)"></span></div>
-    <div class="nv-grid" id="nv-grid"></div>
-  </div>
-  <div class="card">
-    <div class="card-label">Phòng</div>
-    <div class="phong-grid" id="phong-grid"></div>
-  </div>
-  <div class="card">
-    <div class="card-label">Giờ vào</div>
-    <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center;justify-content:flex-end">
-      <button class="btn btn-outline btn-sm" onclick="setNow()" style="white-space:nowrap;align-self:center;flex-shrink:0">Bây giờ</button>
-      <input type="hidden" id="input-in">
-      <div style="display:flex;align-items:center;gap:6px;background:var(--bg3);border:2px solid var(--border);border-radius:14px;padding:10px 16px">
-        <input type="number" id="input-in-h" min="0" max="23" class="time-num" oninput="syncCheckinTime()" placeholder="--" style="width:64px;font-size:42px">
-        <span style="font-size:36px;font-weight:700;color:var(--text3);line-height:1">:</span>
-        <input type="number" id="input-in-m" min="0" max="59" class="time-num" oninput="syncCheckinTime()" placeholder="--" style="width:64px;font-size:42px">
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <button class="btn btn-green" onclick="doCheckIn(false)">
-        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-        CHECK IN
-      </button>
-      <button class="btn btn-amber" onclick="doCheckIn(true)" style="font-size:13px">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        Thời gian thực
-      </button>
-    </div>
+<div class="header">
+  <div class="header-title">Tính Lương</div>
+  <div class="date-btn">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round"/></svg>
+    <span id="date-display">--/--/----</span>
+    <input type="date" id="inp-date" oninput="onDateChange()">
   </div>
 </div>
 
-<!-- ĐANG LÀM -->
-<div class="screen" id="screen-hoatdong">
-  <div class="page-header">
-    <div><div class="page-title">Đang Làm</div><div class="page-subtitle" id="hd-count"></div></div>
-    <span class="pulse-dot"></span>
-  </div>
-  <div id="hoatdong-list"></div>
-</div>
-
-<!-- XẾP CA -->
-<div class="screen" id="screen-xepca">
-  <div class="page-header" style="flex-shrink:0">
-    <div>
-      <div class="page-title">Xếp Ca</div>
-      <div class="page-subtitle" id="xepca-date-label"></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <div id="xepca-counts" style="font-size:11px;color:var(--text2)"></div>
-      <button class="btn btn-outline btn-sm" onclick="xcResetAll()" style="font-size:11px">↺ Reset</button>
-    </div>
-  </div>
-  <div id="xc-wrap">
-    <!-- ZONE 1: Chưa xếp -->
-    <div class="xc-zone xc-zone-pool">
-      <div class="xc-zone-hdr">
-        <span class="xc-zone-title">Chưa xếp <span class="xc-zone-count" id="xc-pool-count"></span></span>
+<div class="pickers-row">
+  <!-- GIỜ VÀO -->
+  <div class="picker-card">
+    <div class="picker-title">GIỜ VÀO</div>
+    <div class="drum-inner">
+      <div class="drum-col-wrap" id="col-in-h" data-key="inH" data-max="24">
+        <div class="drum-track" id="trk-in-h"></div>
       </div>
-      <div class="xc-zone-body" id="xc-zone-pool"
-        ondragover="xcZoneDragOver(event,'pool')" ondrop="xcZoneDrop(event,'pool')" ondragleave="xcZoneDragLeave(event,'pool')">
-        <div class="xc-grid" id="xc-grid-pool"></div>
-      </div>
-    </div>
-    <!-- ZONE 2: Đi làm -->
-    <div class="xc-zone xc-zone-dilam">
-      <div class="xc-zone-hdr">
-        <span class="xc-zone-title">🟢 Đi làm <span class="xc-zone-count" id="xc-count-dilam">0</span></span>
-      </div>
-      <div class="xc-zone-body" id="xc-zone-dilam"
-        ondragover="xcZoneDragOver(event,'dilam')" ondrop="xcZoneDrop(event,'dilam')" ondragleave="xcZoneDragLeave(event,'dilam')">
-        <div class="xc-grid" id="xc-grid-dilam"></div>
-      </div>
-    </div>
-    <!-- ZONE 3: Đi trễ -->
-    <div class="xc-zone xc-zone-ditre">
-      <div class="xc-zone-hdr">
-        <span class="xc-zone-title">🟡 Đi trễ <span class="xc-zone-count" id="xc-count-ditre">0</span></span>
-      </div>
-      <div class="xc-zone-body" id="xc-zone-ditre"
-        ondragover="xcZoneDragOver(event,'ditre')" ondrop="xcZoneDrop(event,'ditre')" ondragleave="xcZoneDragLeave(event,'ditre')">
-        <div class="xc-grid" id="xc-grid-ditre"></div>
-      </div>
-    </div>
-    <!-- ZONE 4: Nghỉ -->
-    <div class="xc-zone xc-zone-nghi">
-      <div class="xc-zone-hdr">
-        <span class="xc-zone-title">🔴 Nghỉ <span class="xc-zone-count" id="xc-count-nghi">0</span></span>
-      </div>
-      <div class="xc-zone-body" id="xc-zone-nghi"
-        ondragover="xcZoneDragOver(event,'nghi')" ondrop="xcZoneDrop(event,'nghi')" ondragleave="xcZoneDragLeave(event,'nghi')">
-        <div class="xc-grid" id="xc-grid-nghi"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- BẢNG LƯƠNG -->
-<div class="screen" id="screen-luong">
-  <div class="page-header">
-    <div><div class="page-title">Bảng Lương</div><div class="page-subtitle" id="luong-week-label"></div></div>
-    <div style="text-align:right">
-      <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.04em;text-transform:uppercase">Chưa chốt</div>
-      <div style="font-size:18px;font-weight:800;color:var(--accent);letter-spacing:-.02em" id="luong-total-header">0d</div>
-    </div>
-  </div>
-  <div class="week-tabs">
-    <button class="week-tab active" id="tab-hientai" onclick="switchWeekTab('hientai')">Tuần này</button>
-    <button class="week-tab" id="tab-lichsu" onclick="switchWeekTab('lichsu')">Lịch sử</button>
-    <button onclick="deleteAllLogsCurrentTab()" style="flex:0;white-space:nowrap;padding:8px 12px;font-size:12px;font-weight:700;border-radius:10px;cursor:pointer;border:1.5px solid rgba(224,92,92,.4);background:rgba(224,92,92,.1);color:var(--red);font-family:inherit">🗑 Xoá tất</button>
-  </div>
-  <div class="search-wrap">
-    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-    <input class="search-input" id="luong-search" type="text" placeholder="Tìm nhân viên..." oninput="refreshLuong()">
-  </div>
-  <div id="luong-content"></div>
-</div>
-
-<!-- DANH MỤC -->
-<div class="screen" id="screen-danhmuc">
-  <div class="page-header">
-    <div><div class="page-title">Danh Mục</div></div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <div id="sync-status" style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px">
-        <span class="pulse-dot" style="background:var(--text3)" id="sync-dot"></span>
-        <span id="sync-label">Chờ sync</span>
-      </div>
-      <button onclick="debugSync()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit">🔍 Test</button>
-    </div>
-  </div>
-  <div style="padding:0 12px 7px;display:flex;justify-content:space-between;align-items:center">
-    <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.07em">NHÂN VIÊN</div>
-    <button class="btn btn-primary btn-sm" onclick="openAddNV()">+ Thêm</button>
-  </div>
-  <div id="nv-list" style="padding:0 12px 18px"></div>
-  <div style="padding:0 12px 7px;display:flex;justify-content:space-between;align-items:center">
-    <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.07em">PHÒNG</div>
-    <button class="btn btn-primary btn-sm" onclick="openAddPhong()">+ Thêm</button>
-  </div>
-  <div style="padding:0 12px 20px"><div class="phong-list" id="phong-list-dm"></div></div>
-</div>
-
-</div>
-
-<nav id="bottom-nav">
-  <button class="nav-item active" id="nav-chamcong" onclick="switchScreen('chamcong')">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-    <span class="nav-label">Check In</span>
-  </button>
-  <button class="nav-item" id="nav-hoatdong" onclick="switchScreen('hoatdong')">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-    <span class="nav-label">Đang Làm</span>
-    <span class="nav-badge" id="badge-hd"></span>
-  </button>
-  <button class="nav-item" id="nav-xepca" onclick="switchScreen('xepca')">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-    <span class="nav-label">Xếp Ca</span>
-  </button>
-  <button class="nav-item" id="nav-luong" onclick="switchScreen('luong')">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-    <span class="nav-label">Bảng Lương</span>
-  </button>
-  <button class="nav-item" id="nav-danhmuc" onclick="switchScreen('danhmuc')">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-    <span class="nav-label">Danh Mục</span>
-  </button>
-</nav>
-</div>
-
-<!-- MODALS -->
-<div class="modal-overlay hidden" id="modal-nv">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="modal-nv-title">Thêm nhân viên</div>
-    <input type="hidden" id="edit-nv-id">
-    <div class="form-group"><label class="form-label">Mã NV</label><input class="form-input" id="nv-ma" type="text" placeholder="NV001" autocomplete="off"></div>
-    <div class="form-group"><label class="form-label">Họ tên *</label><input class="form-input" id="nv-ten" type="text" placeholder="Nguyễn Văn A" autocomplete="off"></div>
-    <div class="form-group"><label class="form-label">Số điện thoại</label><input class="form-input" id="nv-sdt" type="tel" placeholder="0901 234 567"></div>
-    <div class="form-group"><label class="form-label">Giá tiền / giờ (đồng)</label><input class="form-input" id="nv-gia" type="number" placeholder="35000" min="0" step="1000"></div>
-    <div style="display:flex;gap:9px;margin-top:6px">
-      <button class="btn btn-outline" style="flex:1" onclick="closeModal('modal-nv')">Huỷ</button>
-      <button class="btn btn-primary" style="flex:2" onclick="saveNV()">Lưu</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay hidden" id="modal-edit-log">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Sửa lần chấm công</div>
-    <input type="hidden" id="edit-log-id">
-    <div class="form-group"><label class="form-label">Ngày</label><input class="form-input" id="edit-log-date" type="date" oninput="updPrev()"></div>
-    <div class="form-group">
-      <label class="form-label">Giờ vào</label>
-      <div style="display:flex;justify-content:flex-end">
-        <div style="display:flex;align-items:center;gap:6px;background:var(--bg3);border:2px solid var(--border);border-radius:12px;padding:8px 14px">
-          <input type="number" id="edit-log-in-h" min="0" max="23" class="time-num-sm" oninput="updPrev()" placeholder="00" style="width:54px;font-size:32px">
-          <span style="font-size:28px;font-weight:700;color:var(--text3)">:</span>
-          <input type="number" id="edit-log-in-m" min="0" max="59" class="time-num-sm" oninput="updPrev()" placeholder="00" style="width:54px;font-size:32px">
-        </div>
-      </div>
-      <div id="edit-log-in-day" style="font-size:10px;color:var(--accent);font-weight:600;margin-top:4px;text-align:right"></div>
-      <input type="hidden" id="edit-log-in">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Giờ ra</label>
-      <div style="display:flex;justify-content:flex-end">
-        <div style="display:flex;align-items:center;gap:6px;background:var(--bg3);border:2px solid var(--border);border-radius:12px;padding:8px 14px">
-          <input type="number" id="edit-log-out-h" min="0" max="23" class="time-num-sm" oninput="updPrev()" placeholder="00" style="width:54px;font-size:32px">
-          <span style="font-size:28px;font-weight:700;color:var(--text3)">:</span>
-          <input type="number" id="edit-log-out-m" min="0" max="59" class="time-num-sm" oninput="updPrev()" placeholder="00" style="width:54px;font-size:32px">
-        </div>
-      </div>
-      <div id="edit-log-out-day" style="font-size:10px;color:var(--accent);font-weight:600;margin-top:4px;text-align:right"></div>
-      <input type="hidden" id="edit-log-out">
-    </div>
-    <div class="form-group"><label class="form-label">Giá / giờ (đồng)</label><input class="form-input" id="edit-log-gia" type="number" min="0" step="1000"></div>
-    <div class="form-group"><label class="form-label">Thành tiền</label><div class="form-input" id="edit-log-preview" style="color:var(--accent);font-weight:700">---</div></div>
-    <div style="display:flex;gap:9px;margin-top:6px">
-      <button class="btn btn-outline" style="flex:1" onclick="closeModal('modal-edit-log')">Huỷ</button>
-      <button class="btn btn-primary" style="flex:2" onclick="saveEditLog()">Cập nhật</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay hidden" id="modal-chot">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Chốt lương</div>
-    <div id="chot-preview" style="margin-bottom:14px"></div>
-    <div style="display:flex;gap:9px">
-      <button class="btn btn-outline" style="flex:1" onclick="closeModal('modal-chot')">Huỷ</button>
-      <button class="btn-chot" style="flex:2;border-radius:var(--radius-sm)" onclick="doShareAnh()">📤 Chia sẻ bảng lương</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CHỈNH GIỜ CẢ PHÒNG -->
-<div class="modal-overlay hidden" id="modal-edit-room-time">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">⏰ Chỉnh giờ cả phòng</div>
-    <input type="hidden" id="edit-room-phongid">
-    <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:12px;text-align:center" id="edit-room-label"></div>
-    <div class="form-group">
-      <label class="form-label">Giờ ra</label>
-      <div style="display:flex;justify-content:flex-end;margin-top:6px">
-        <div style="display:flex;align-items:center;gap:6px;background:var(--bg3);border:2px solid var(--accent);border-radius:14px;padding:10px 16px">
-          <input type="number" id="edit-room-out-h" min="0" max="23" class="time-num" placeholder="--" style="width:64px;font-size:42px">
-          <span style="font-size:36px;font-weight:700;color:var(--text3)">:</span>
-          <input type="number" id="edit-room-out-m" min="0" max="59" class="time-num" placeholder="--" style="width:64px;font-size:42px">
-        </div>
-      </div>
-      <div style="font-size:10px;color:var(--text3);margin-top:6px;text-align:right">Checkout cả phòng với giờ ra này</div>
-    </div>
-    <div style="font-size:10px;color:var(--text3);margin-bottom:8px;text-align:center">Lướt lên/xuống để tăng giảm giờ phút</div>
-    <div style="display:flex;gap:9px">
-      <button class="btn btn-outline" style="flex:1" onclick="closeModal('modal-edit-room-time')">Huỷ</button>
-      <button class="btn btn-primary" style="flex:2" onclick="saveEditRoomTime()">✅ Áp dụng</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CHỈNH GIỜ RA TỪNG NV -->
-<div class="modal-overlay hidden" id="modal-edit-sess-time">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">⏰ Chỉnh giờ ra</div>
-    <input type="hidden" id="edit-sess-id">
-    <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:12px;text-align:center" id="edit-sess-label"></div>
-    <div class="form-group">
-      <label class="form-label">Giờ ra</label>
-      <div style="display:flex;justify-content:flex-end;margin-top:6px">
-        <div style="display:flex;align-items:center;gap:6px;background:var(--bg3);border:2px solid var(--accent);border-radius:14px;padding:10px 16px">
-          <input type="number" id="edit-sess-out-h" min="0" max="23" class="time-num" placeholder="--" style="width:64px;font-size:42px">
-          <span style="font-size:36px;font-weight:700;color:var(--text3)">:</span>
-          <input type="number" id="edit-sess-out-m" min="0" max="59" class="time-num" placeholder="--" style="width:64px;font-size:42px">
-        </div>
-      </div>
-      <div style="font-size:10px;color:var(--text3);margin-top:6px;text-align:right">Checkout nhân viên này với giờ ra trên</div>
-    </div>
-    <div style="font-size:10px;color:var(--text3);margin-bottom:8px;text-align:center">Lướt lên/xuống để tăng giảm giờ phút</div>
-    <div style="display:flex;gap:9px">
-      <button class="btn btn-outline" style="flex:1" onclick="closeModal('modal-edit-sess-time')">Huỷ</button>
-      <button class="btn btn-primary" style="flex:2" onclick="saveEditSessTime()">✅ Check Out</button>
-    </div>
-  </div>
-</div>
-
-<!-- XẾP CA — Modal đi trễ -->
-<div class="xc-drum-overlay hidden" id="xc-modal-ditre">
-  <div class="xc-drum-sheet">
-    <div class="xc-drum-title">⏰ Đi Trễ — <span id="xc-ditre-name"></span></div>
-    <div class="xc-drum-subtitle">Kéo chọn giờ đến thực tế</div>
-    <div style="position:relative">
-      <div class="xc-drum-cols-row">
-        <div class="xc-drum-sel-bar"></div>
-        <div class="xc-drum-colon">:</div>
-        <div class="xc-drum-col" id="xc-drum-h"></div>
-        <div class="xc-drum-col" id="xc-drum-m"></div>
-      </div>
-    </div>
-    <div class="xc-drum-note-area">
-      <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">Ghi chú lý do</div>
-      <textarea class="xc-drum-note-input" id="xc-ditre-note" rows="2" placeholder="VD: Kẹt xe, ngủ dậy trễ..."></textarea>
-    </div>
-    <div class="xc-drum-actions">
-      <button class="btn btn-outline" style="flex:1;border-radius:9px" onclick="xcCloseDitreModal()">Huỷ</button>
-      <button class="btn" style="flex:2;border-radius:9px;background:#f0c040;color:#0f1923;font-weight:800;font-size:14px" onclick="xcConfirmDitre()">✓ Xác nhận</button>
-    </div>
-  </div>
-</div>
-
-<!-- XẾP CA — Modal xem info đi trễ -->
-<div class="modal-overlay hidden" id="xc-modal-ditre-view">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" style="color:#f0c040">⏰ Thông tin đi trễ</div>
-    <div id="xc-ditre-view-content"></div>
-    <div style="margin-top:14px">
-      <button class="btn btn-outline" style="width:100%" onclick="closeModal('xc-modal-ditre-view')">Đóng</button>
-    </div>
-  </div>
-</div>
-
-<!-- DRUM PICKER -->
-<div class="drum-overlay hidden" id="drum-overlay">
-  <div class="drum-sheet">
-    <div class="drum-title" id="drum-title">Chọn giờ vào</div>
-    <div class="drum-col-labels"><div>Giờ</div><div>Phút</div></div>
-    <div class="drum-cols">
-      <div class="drum-sel-bar"></div>
       <div class="drum-colon">:</div>
-      <div class="drum-col" id="drum-h"></div>
-      <div class="drum-col" id="drum-m"></div>
+      <div class="drum-col-wrap" id="col-in-m" data-key="inM" data-max="60">
+        <div class="drum-track" id="trk-in-m"></div>
+      </div>
     </div>
-    <div class="drum-actions">
-      <button class="btn btn-outline" style="flex:1" onclick="closeDrum()">Huỷ</button>
-      <button class="btn btn-primary" style="flex:2" onclick="confirmDrum()">Xong</button>
+  </div>
+  <!-- GIỜ RA -->
+  <div class="picker-card">
+    <div class="picker-title">GIỜ RA</div>
+    <div class="drum-inner">
+      <div class="drum-col-wrap" id="col-out-h" data-key="outH" data-max="24">
+        <div class="drum-track" id="trk-out-h"></div>
+      </div>
+      <div class="drum-colon">:</div>
+      <div class="drum-col-wrap" id="col-out-m" data-key="outM" data-max="60">
+        <div class="drum-track" id="trk-out-m"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<div id="toast"></div>
+<div class="gia-wrap">
+  <div class="gia-card">
+    <div class="gia-label">Giá tiền / giờ</div>
+    <div class="gia-input-row">
+      <input class="gia-input" id="inp-gia" type="text" inputmode="numeric" placeholder="200.000" oninput="fmtGia(this)">
+      <span class="gia-unit">đ / giờ</span>
+    </div>
+  </div>
+  <div class="night-toggle" id="night-btn" onclick="toggleNight()">
+    <div class="night-toggle-icon" id="night-icon">🌙</div>
+    <div class="night-toggle-label" id="night-lbl">Ca đêm</div>
+  </div>
+</div>
+
+<div class="result-card">
+  <div class="result-section">
+    <div class="result-head">Kết quả</div>
+    <div class="result-row"><span class="result-label">Ngày</span><span class="result-val" id="res-date">--</span></div>
+    <div class="result-row"><span class="result-label">Ca làm</span><span class="result-val" id="res-range">--:-- → --:--</span></div>
+    <div class="result-row"><span class="result-label">Tổng giờ</span><span class="result-val" id="res-hrs" style="color:var(--amber)">--</span></div>
+    <div class="result-row"><span class="result-label">Đơn giá</span><span class="result-val" id="res-gia">--</span></div>
+  </div>
+  <div class="result-total-row">
+    <span class="result-total-label">Thành tiền</span>
+    <span class="result-total-val empty" id="res-total">--</span>
+  </div>
+</div>
 
 <script>
 'use strict';
-// ═══ DB ═══
-let db;
-function uuid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+const pad = n => String(n).padStart(2,'0');
+const DAY = ['CN','T2','T3','T4','T5','T6','T7'];
+const ITEM_H = 48;
 
-function openDB(){
-  return new Promise((res,rej)=>{
-    const req=indexedDB.open('ChamCongV6',3);
-    req.onupgradeneeded=e=>{
-      const d=e.target.result;
-      const oldV=e.oldVersion;
-      // v1→v2: đổi sang UUID keyPath (xoá store cũ autoIncrement)
-      if(oldV<2){
-        ['nhanvien','phong','sessions','logs'].forEach(s=>{
-          if(d.objectStoreNames.contains(s))d.deleteObjectStore(s);
-        });
-        ['nhanvien','phong','sessions'].forEach(s=>d.createObjectStore(s,{keyPath:'id'}));
-        const ls=d.createObjectStore('logs',{keyPath:'id'});
-        ls.createIndex('weekKey','weekKey',{unique:false});
-      }
-      // v2→v3: chỉ thêm store xepca_state, không xoá gì cả
-      if(!d.objectStoreNames.contains('xepca_state'))
-        d.createObjectStore('xepca_state',{keyPath:'id'});
-    };
-    req.onsuccess=e=>{db=e.target.result;res();};req.onerror=rej;
+const state = { inH:8, inM:0, outH:17, outM:0, isNight:false };
+
+/* ── DATE ── */
+const inpDate = document.getElementById('inp-date');
+const dateDisplay = document.getElementById('date-display');
+function todayStr(){
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function updateDateDisplay(val){
+  if(!val){ dateDisplay.textContent='--/--/----'; return; }
+  const [y,m,d] = val.split('-');
+  dateDisplay.textContent = `${d}/${m}/${y}`;
+}
+inpDate.value = todayStr();
+updateDateDisplay(inpDate.value);
+function onDateChange(){ updateDateDisplay(inpDate.value); calc(); }
+
+/* ── DRUM PICKER (touch-based, iOS safe) ── */
+function buildDrum(colWrapId, trackId, count, initVal){
+  const wrap = document.getElementById(colWrapId);
+  const track = document.getElementById(trackId);
+  const key = wrap.dataset.key;
+
+  // Build items
+  track.innerHTML = '';
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'drum-item';
+    el.textContent = pad(i);
+    track.appendChild(el);
+  }
+
+  const items = track.querySelectorAll('.drum-item');
+  let currentIdx = initVal;
+  let offsetY = 0; // current translateY of track
+
+  // The scroll area height (wrap minus label area at top = 0 since label removed from inner)
+  // Center of wrap = half of wrap clientHeight
+  // When item[i] is centered: translateY = wrapH/2 - i*ITEM_H - ITEM_H/2
+
+  function getCenter(){
+    return wrap.clientHeight / 2;
+  }
+  function idxToY(idx){
+    return getCenter() - idx * ITEM_H - ITEM_H / 2;
+  }
+  function clamp(y){
+    const min = idxToY(count-1);
+    const max = idxToY(0);
+    return Math.max(min, Math.min(max, y));
+  }
+  function yToIdx(y){
+    // invert: idx = (center - ITEM_H/2 - y) / ITEM_H
+    return Math.round((getCenter() - ITEM_H/2 - y) / ITEM_H);
+  }
+  function setY(y, animate){
+    offsetY = y;
+    track.style.transition = animate ? 'transform .25s cubic-bezier(.25,.46,.45,.94)' : 'none';
+    track.style.transform = `translateY(${y}px)`;
+    updateActive();
+  }
+  function snapTo(idx, animate){
+    idx = Math.max(0, Math.min(count-1, idx));
+    currentIdx = idx;
+    setY(idxToY(idx), animate);
+    state[key] = idx;
+    calc();
+  }
+  function updateActive(){
+    const ci = yToIdx(offsetY);
+    items.forEach((el,i) => {
+      el.classList.toggle('active', i === ci);
+    });
+  }
+
+  // Init position
+  requestAnimationFrame(()=>{
+    snapTo(initVal, false);
   });
-}
-const dbAll=s=>new Promise((r,j)=>{const q=db.transaction(s,'readonly').objectStore(s).getAll();q.onsuccess=e=>r(e.target.result);q.onerror=j;});
-const dbGet=(s,id)=>new Promise((r,j)=>{const q=db.transaction(s,'readonly').objectStore(s).get(id);q.onsuccess=e=>r(e.target.result);q.onerror=j;});
-const dbPut=(s,o)=>new Promise((r,j)=>{const q=db.transaction(s,'readwrite').objectStore(s).put(o);q.onsuccess=e=>r(e.target.result);q.onerror=j;});
-const dbDel=(s,id)=>new Promise((r,j)=>{const q=db.transaction(s,'readwrite').objectStore(s).delete(id);q.onsuccess=()=>r();q.onerror=j;});
 
-// ═══ HELPERS ═══
-const pad=n=>String(n).padStart(2,'0');
-const nowStr=()=>{const d=new Date();return `${pad(d.getHours())}:${pad(d.getMinutes())}`;};
-const todayStr=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;};
-const fmtDate=s=>{const d=new Date(s+'T00:00:00');return `${pad(d.getDate())}/${pad(d.getMonth()+1)}`;};
-const fmtDateFull=s=>{const d=new Date(s+'T00:00:00');return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;};
-const fmtMoney=n=>Math.round(n).toLocaleString('vi-VN')+'d';
-const DAY=['CN','T2','T3','T4','T5','T6','T7'];
-function calcMinsFromStrings(a,b){const [ah,am]=a.split(':').map(Number);const [bh,bm]=b.split(':').map(Number);let i=ah*60+am,o=bh*60+bm;if(o<=i)o+=1440;return o-i;}
-function calcMinsFromTs(ts){return Math.floor((Date.now()-ts)/60000);}
-function fmtHrs(m){const h=Math.floor(m/60),mn=m%60;return mn===0?`${h}h`:`${h}h${pad(mn)}p`;}
-function calcMoney(mins,gia){return Math.round(mins/60*gia);}
-function getWeekRange(ds){const d=ds?new Date(ds+'T00:00:00'):new Date();const dow=d.getDay(),diff=dow===0?-6:1-dow;const mon=new Date(d);mon.setDate(d.getDate()+diff);const sat=new Date(mon);sat.setDate(mon.getDate()+5);const fmt=x=>`${x.getFullYear()}-${pad(x.getMonth()+1)}-${pad(x.getDate())}`;return{start:fmt(mon),end:fmt(sat)};}
-const getWeekKey=ds=>getWeekRange(ds).start;
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  /* Touch handling */
+  let startY = 0, startOffset = 0, lastY = 0, lastT = 0, velY = 0;
+  let isDragging = false;
 
-// ═══ STATE ═══
-let selNvIds=new Set(),selPhongId=null,allNVs=[],allPhong=[];
-let currentWeekTab='hientai',chotNvId=null,chotWeekKey=null;
-let liveTimer=null,drumTarget=null;
-// Lưu các log đã xác nhận (tích ô) — persist qua localStorage
-let confirmedLogIds=new Set(JSON.parse(localStorage.getItem('confirmed_logs')||'[]'));
+  function onStart(clientY){
+    isDragging = true;
+    startY = clientY;
+    startOffset = offsetY;
+    lastY = clientY;
+    lastT = Date.now();
+    velY = 0;
+    track.style.transition = 'none';
+  }
+  function onMove(clientY){
+    if(!isDragging) return;
+    const now = Date.now();
+    const dt = now - lastT || 1;
+    velY = (clientY - lastY) / dt * 16; // px per frame
+    lastY = clientY;
+    lastT = now;
+    const dy = clientY - startY;
+    setY(clamp(startOffset + dy), false);
+  }
+  function onEnd(){
+    if(!isDragging) return;
+    isDragging = false;
+    // Momentum
+    let targetY = clamp(offsetY + velY * 8);
+    // snap to nearest
+    let idx = Math.round((getCenter() - ITEM_H/2 - targetY) / ITEM_H);
+    snapTo(idx, true);
+  }
 
-// ═══ CLOCK ═══
-function updateClock(){
-  const d=new Date();
-  const el=document.getElementById('live-time');if(el)el.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  const sub=document.getElementById('today-label');if(sub)sub.textContent=`${DAY[d.getDay()]}, ${fmtDateFull(todayStr())}`;
-}
-setInterval(updateClock,15000);updateClock();
-
-// ═══ NAV ═══
-function switchScreen(name){
-  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.scrollTop=0;});
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('screen-'+name).classList.add('active');
-  document.getElementById('nav-'+name).classList.add('active');
-  if(liveTimer&&name!=='hoatdong'){clearInterval(liveTimer);liveTimer=null;}
-  if(name==='chamcong')refreshCC();
-  if(name==='hoatdong')refreshHD(true);
-  if(name==='xepca'){xcUpdateDateLabel();xcRenderAll();}
-  if(name==='luong')refreshLuong();
-  if(name==='danhmuc')refreshDM();
-}
-function openModal(id){document.getElementById(id).classList.remove('hidden');}
-function closeModal(id){document.getElementById(id).classList.add('hidden');}
-document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.add('hidden');}));
-document.getElementById('xc-modal-ditre').addEventListener('click',e=>{if(e.target===document.getElementById('xc-modal-ditre'))xcCloseDitreModal();});
-
-// ═══ TOAST ═══
-let toastT;
-function toast(msg,ms=2400){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),ms);}
-
-// ═══ TIME PICKER ═══
-function setTimeValue(id,h,m){
-  const v=pad(h)+':'+pad(m);
-  const el=document.getElementById(id);if(el)el.value=v;
-  // Hỗ trợ cả input number lẫn span text
-  const eh=document.getElementById(id+'-h');
-  if(eh){if(eh.tagName==='INPUT')eh.value=pad(h);else eh.textContent=pad(h);}
-  const em=document.getElementById(id+'-m');
-  if(em){if(em.tagName==='INPUT')em.value=pad(m);else em.textContent=pad(m);}
-}
-// ══ SCROLL/SWIPE để tăng giảm giờ phút ══
-function setupTimeScroll(el,min,max,onchange){
-  // Mouse wheel
-  el.addEventListener('wheel',e=>{
+  // Touch events
+  wrap.addEventListener('touchstart', e=>{
     e.preventDefault();
-    const delta=e.deltaY<0?1:-1;
-    let v=parseInt(el.value)||0;
-    v+=delta;
-    if(v>max)v=min;
-    if(v<min)v=max;
-    el.value=String(v).padStart(2,'0');
-    if(onchange)onchange();
-  },{passive:false});
-  // Touch swipe
-  let touchStartY=0,touchStartV=0;
-  el.addEventListener('touchstart',e=>{
-    touchStartY=e.touches[0].clientY;
-    touchStartV=parseInt(el.value)||0;
+    onStart(e.touches[0].clientY);
+  }, {passive:false});
+  wrap.addEventListener('touchmove', e=>{
     e.preventDefault();
-  },{passive:false});
-  el.addEventListener('touchmove',e=>{
+    onMove(e.touches[0].clientY);
+  }, {passive:false});
+  wrap.addEventListener('touchend', e=>{
     e.preventDefault();
-    const dy=touchStartY-e.touches[0].clientY;
-    const steps=Math.round(dy/18);
-    let v=touchStartV+steps;
-    // wrap around
-    const range=max-min+1;
-    v=((v-min)%range+range)%range+min;
-    el.value=String(v).padStart(2,'0');
-    if(onchange)onchange();
-  },{passive:false});
+    onEnd();
+  }, {passive:false});
+
+  // Mouse events (desktop)
+  wrap.addEventListener('mousedown', e=>{
+    onStart(e.clientY);
+    const mm = ev=>onMove(ev.clientY);
+    const mu = ()=>{ onEnd(); window.removeEventListener('mousemove',mm); window.removeEventListener('mouseup',mu); };
+    window.addEventListener('mousemove',mm);
+    window.addEventListener('mouseup',mu);
+  });
+
+  // Click items
+  items.forEach((el,i)=>{
+    el.addEventListener('click', ()=> snapTo(i, true));
+  });
 }
 
-function initTimeInputs(){
-  // Check-in
-  const ih=document.getElementById('input-in-h');
-  const im=document.getElementById('input-in-m');
-  if(ih)setupTimeScroll(ih,0,23,syncCheckinTime);
-  if(im)setupTimeScroll(im,0,59,syncCheckinTime);
-  // Edit log
-  const eih=document.getElementById('edit-log-in-h');
-  const eim=document.getElementById('edit-log-in-m');
-  const eoh=document.getElementById('edit-log-out-h');
-  const eom=document.getElementById('edit-log-out-m');
-  if(eih)setupTimeScroll(eih,0,23,updPrev);
-  if(eim)setupTimeScroll(eim,0,59,updPrev);
-  if(eoh)setupTimeScroll(eoh,0,23,updPrev);
-  if(eom)setupTimeScroll(eom,0,59,updPrev);
+buildDrum('col-in-h','trk-in-h',24,state.inH);
+buildDrum('col-in-m','trk-in-m',60,state.inM);
+buildDrum('col-out-h','trk-out-h',24,state.outH);
+buildDrum('col-out-m','trk-out-m',60,state.outM);
+
+/* ── NIGHT TOGGLE ── */
+function toggleNight(){
+  state.isNight = !state.isNight;
+  const btn = document.getElementById('night-btn');
+  btn.style.borderColor = state.isNight ? 'rgba(240,168,78,.4)' : '';
+  btn.style.background  = state.isNight ? 'rgba(240,168,78,.08)' : '';
+  document.getElementById('night-icon').textContent = state.isNight ? '🌙' : '☀️';
+  document.getElementById('night-lbl').textContent  = state.isNight ? 'Đêm' : 'Ca ngày';
+  calc();
 }
 
-// Sync check-in time từ input number → hidden field
-function syncCheckinTime(){
-  const h=Math.max(0,Math.min(23,parseInt(document.getElementById('input-in-h').value)||0));
-  const m=Math.max(0,Math.min(59,parseInt(document.getElementById('input-in-m').value)||0));
-  document.getElementById('input-in').value=pad(h)+':'+pad(m);
-}
-function getTimeValue(id){return document.getElementById(id)?.value||'00:00';}
-function openTimePicker(fieldId){
-  drumTarget=fieldId;
-  const cur=getTimeValue(fieldId);
-  const [ch,cm]=cur.split(':').map(Number);
-  const lblMap={'input-in':'Giờ vào','edit-log-in':'Giờ vào','edit-log-out':'Giờ ra'};
-  document.getElementById('drum-title').textContent=lblMap[fieldId]||'Chọn giờ';
-  const colH=document.getElementById('drum-h'),colM=document.getElementById('drum-m');
-  colH.innerHTML='';colM.innerHTML='';
-  for(let i=0;i<24;i++){const d=document.createElement('div');d.className='drum-item'+(i===ch?' active-item':'');d.textContent=pad(i);d.dataset.val=i;colH.appendChild(d);}
-  for(let i=0;i<60;i++){const d=document.createElement('div');d.className='drum-item'+(i===cm?' active-item':'');d.textContent=pad(i);d.dataset.val=i;colM.appendChild(d);}
-  document.getElementById('drum-overlay').classList.remove('hidden');
-  setTimeout(()=>{
-    colH.querySelectorAll('.drum-item')[ch]?.scrollIntoView({block:'center',behavior:'instant'});
-    colM.querySelectorAll('.drum-item')[cm]?.scrollIntoView({block:'center',behavior:'instant'});
-  },30);
-  const mkHL=col=>{col.onscroll=()=>{const cy=col.scrollTop+col.clientHeight/2;let best=null,bd=Infinity;col.querySelectorAll('.drum-item').forEach(item=>{const d=Math.abs(cy-item.offsetTop-22);if(d<bd){bd=d;best=item;}});col.querySelectorAll('.drum-item').forEach(i=>i.classList.remove('active-item'));if(best)best.classList.add('active-item');};};
-  mkHL(colH);mkHL(colM);
-}
-function confirmDrum(){
-  const ah=document.getElementById('drum-h').querySelector('.active-item');
-  const am=document.getElementById('drum-m').querySelector('.active-item');
-  setTimeValue(drumTarget,ah?parseInt(ah.dataset.val):0,am?parseInt(am.dataset.val):0);
-  closeDrum();
-  if(drumTarget.startsWith('edit-log'))updPrev();
-}
-function closeDrum(){document.getElementById('drum-overlay').classList.add('hidden');}
-document.getElementById('drum-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('drum-overlay'))closeDrum();});
+/* ── CALC ── */
+function calc(){
+  const dateVal = inpDate.value;
+  const raw = document.getElementById('inp-gia').value.replace(/[^0-9]/g,'');
+  const gia = parseInt(raw) || 0;
 
-// ═══ CHECK IN ═══
-async function refreshCC(){
-  allNVs=await dbAll('nhanvien');allPhong=await dbAll('phong');
-  const sessions=await dbAll('sessions');
-  const busyIds=new Set(sessions.map(s=>s.nvId));
-  // Remove busy NVs from selection
-  busyIds.forEach(id=>selNvIds.delete(id));
+  let inMins  = state.inH * 60 + state.inM;
+  let outMins = state.outH * 60 + state.outM;
+  let isNight = state.isNight;
 
-  const g=document.getElementById('nv-grid');
-  if(!allNVs.length){
-    g.innerHTML=`<div style="color:var(--text3);font-size:12px;grid-column:1/-1">Vào Danh Mục → thêm nhân viên</div>`;
+  if(outMins <= inMins){
+    // giờ ra ≤ giờ vào → qua đêm (tự động)
+    outMins += 1440;
+    isNight = true;
+  } else if(isNight){
+    // người dùng bật ca đêm thủ công
+    outMins += 1440;
+  }
+
+  const totalMins = Math.max(0, outMins - inMins);
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  const hrsDecimal = (totalMins / 60).toFixed(2);
+  const hrsStr = m === 0 ? `${h}h` : `${h}h ${pad(m)}p`;
+
+  let dateStr = '--';
+  if(dateVal){
+    const d = new Date(dateVal + 'T00:00:00');
+    dateStr = `${DAY[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+  }
+
+  const nightTag = isNight ? '<span class="night-badge">🌙 Qua đêm</span>' : '';
+
+  document.getElementById('res-date').textContent = dateStr;
+  document.getElementById('res-range').innerHTML =
+    `${pad(state.inH)}:${pad(state.inM)} → ${pad(state.outH)}:${pad(state.outM)}${nightTag}`;
+  document.getElementById('res-hrs').textContent =
+    totalMins > 0 ? `${hrsStr}  (${hrsDecimal}h)` : '--';
+  document.getElementById('res-gia').textContent =
+    gia > 0 ? gia.toLocaleString('vi-VN') + ' đ/h' : '--';
+
+  const totalEl = document.getElementById('res-total');
+  if(gia > 0 && totalMins > 0){
+    const money = Math.round(totalMins / 60 * gia);
+    totalEl.textContent = money.toLocaleString('vi-VN') + 'đ';
+    totalEl.className = 'result-total-val';
   } else {
-    g.innerHTML=allNVs.map(nv=>{
-      const busy=busyIds.has(nv.id),sel=selNvIds.has(nv.id);
-      return `<button class="sel-item${sel?' sel':''}${busy?' busy-nv':''}" data-nvid="${nv.id}"${busy?' disabled':''}>
-        <span class="sel-check"><svg width="8" height="8" fill="none" stroke="#0f1923" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7"/></svg></span>
-        <span class="si-name">${esc(nv.ten)}</span>
-        <span class="si-sub">${busy?'Đang làm':esc(nv.ma||'')}</span>
-      </button>`;
-    }).join('');
-    g.onclick=e=>{
-      const btn=e.target.closest('button[data-nvid]');
-      if(!btn||btn.disabled)return;
-      const id=btn.dataset.nvid;
-      if(selNvIds.has(id))selNvIds.delete(id);else selNvIds.add(id);
-      btn.classList.toggle('sel',selNvIds.has(id));
-      const chk=btn.querySelector('.sel-check');if(chk)chk.style.display=selNvIds.has(id)?'flex':'none';
-      updateSelCount();
-    };
-  }
-
-  const pg=document.getElementById('phong-grid');
-  if(!allPhong.length){
-    pg.innerHTML=`<div style="color:var(--text3);font-size:12px;grid-column:1/-1">Vào Danh Mục → thêm phòng</div>`;
-  } else {
-    pg.innerHTML=allPhong.map(p=>`<button class="sel-item${selPhongId===p.id?' sel':''}" data-phongid="${p.id}"><span class="si-name">${esc(p.ten)}</span></button>`).join('');
-    pg.onclick=e=>{
-      const btn=e.target.closest('button[data-phongid]');if(!btn)return;
-      selPhongId=btn.dataset.phongid;
-      pg.querySelectorAll('.sel-item').forEach(b=>b.classList.toggle('sel',b===btn));
-    };
-  }
-  updateSelCount();
-}
-
-function updateSelCount(){
-  const el=document.getElementById('sel-count');
-  if(el)el.textContent=selNvIds.size>0?`(${selNvIds.size} đã chọn)`:'';
-}
-
-function setNow(){
-  const d=new Date();setTimeValue('input-in',d.getHours(),d.getMinutes());
-  syncCheckinTime();
-}
-
-async function doCheckIn(realtime){
-  if(!selNvIds.size){toast('⚠️ Chọn ít nhất 1 nhân viên');return;}
-  if(!selPhongId){toast('⚠️ Chọn phòng');return;}
-  const ph=allPhong.find(p=>p.id===selPhongId);
-  let inTime,inTs;
-  if(realtime){
-    const now=new Date();
-    inTime=`${pad(now.getHours())}:${pad(now.getMinutes())}`;
-    inTs=Date.now();
-  } else {
-    inTime=getTimeValue('input-in')||nowStr();
-    const [ih,im]=inTime.split(':').map(Number);
-    const base=new Date();base.setHours(ih,im,0,0);
-    if(base.getTime()>Date.now()+60000)base.setDate(base.getDate()-1);
-    inTs=base.getTime();
-  }
-  const ids=[...selNvIds];
-  for(const nvId of ids){
-    const nv=allNVs.find(n=>n.id===nvId);if(!nv)continue;
-    await dbPut('sessions',{id:uuid(),nvId,nvTen:nv.ten,nvMa:nv.ma||'',phongId:selPhongId,phongTen:ph.ten,date:todayStr(),inTime,inTimestamp:inTs,giaTien:nv.gia||0});
-  }
-  const names=ids.map(id=>allNVs.find(n=>n.id===id)?.ten||'').filter(Boolean).join(', ');
-  toast(`✅ Check in: ${names} | ${ph.ten} | ${inTime}`);
-  selNvIds.clear();
-  refreshCC();updateBadge();
-  await autoSync(); // Push lên cloud ngay sau check-in
-}
-
-async function updateBadge(){
-  const s=await dbAll('sessions');const b=document.getElementById('badge-hd');
-  if(s.length){b.textContent=s.length;b.classList.add('show');}else b.classList.remove('show');
-}
-
-// ═══ ĐANG LÀM — group by phòng ═══
-async function refreshHD(startTimer){
-  const sessions=await dbAll('sessions');
-  const el=document.getElementById('hoatdong-list');
-  const countEl=document.getElementById('hd-count');
-  updateBadge();
-
-  if(!sessions.length){
-    if(liveTimer){clearInterval(liveTimer);liveTimer=null;}
-    countEl.textContent='Không có ai đang làm';
-    el.innerHTML=`<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg><p>Chưa có ai check in</p></div>`;
-    return;
-  }
-  countEl.textContent=`${sessions.length} người đang làm`;
-
-  // Group by phòng
-  const byRoom={};
-  sessions.forEach(s=>{
-    if(!byRoom[s.phongId])byRoom[s.phongId]={ten:s.phongTen,phongId:s.phongId,rows:[]};
-    byRoom[s.phongId].rows.push(s);
-  });
-
-  el.innerHTML='';
-  Object.values(byRoom).sort((a,b)=>a.ten.localeCompare(b.ten,'vi',{numeric:true})).forEach(room=>{
-    const card=document.createElement('div');card.className='room-card open';card.dataset.roomid=room.phongId;
-    // Header phòng
-    const hdr=document.createElement('div');hdr.className='room-header';
-    hdr.innerHTML=`
-      <div style="display:flex;flex-direction:column;flex:1">
-        <span class="room-name">${esc(room.ten)}</span>
-        <span class="room-count" id="room-total-${room.phongId}">0 người • 0d</span>
-      </div>
-      <button class="btn-red btn-sm" onclick="openEditRoomTime('${room.phongId}')" style="background:var(--bg4);color:var(--text2);border-color:var(--border2);margin-right:4px;font-size:11px" title="Chỉnh giờ vào cả phòng">⏰ Giờ</button>
-      <button class="btn-red btn-sm" onclick="deleteRoom('${room.phongId}')" style="margin-right:4px;font-size:11px" title="Xoá cả phòng">Xoá</button>
-      <button class="btn-red btn-sm" onclick="checkoutRoom('${room.phongId}')" style="background:var(--accent);color:#0f1923;margin-right:8px;font-size:11px">OUT</button>
-      <svg class="room-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>`;
-    // Toggle expand
-    hdr.querySelector('svg.room-chevron').parentElement;
-    hdr.addEventListener('click',e=>{
-      if(e.target.closest('button'))return;
-      card.classList.toggle('open');
-    });
-    card.appendChild(hdr);
-
-    // Body
-    const body=document.createElement('div');body.className='room-body';
-    room.rows.forEach(s=>{
-      const row=document.createElement('div');row.className='sess-row';
-      row.innerHTML=`
-        <div class="sess-avatar">${s.nvTen.trim()[0].toUpperCase()}</div>
-        <div class="sess-info">
-          <div class="sess-name">${esc(s.nvTen)}</div>
-          <div class="sess-time" id="tstr-${s.id}">${s.inTime} → --:--</div>
-          <div class="sess-elapsed" id="telap-${s.id}">00:00:00</div>
-        </div>
-        <span class="sess-money" id="tmoney-${s.id}">0d</span>
-        <div class="sess-actions">
-          <button class="btn-icon" onclick="openEditSessTime('${s.id}')" style="background:rgba(232,162,78,.1);border-color:rgba(232,162,78,.2);color:var(--accent)" title="Sửa giờ ra">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          </button>
-          <button class="co-btn" onclick="doCheckOut('${s.id}')">CHECK OUT</button>
-          <button class="btn-icon" onclick="deleteSession('${s.id}')" style="background:rgba(224,92,92,.1);border-color:rgba(224,92,92,.2);color:var(--red)" title="Xoá check in">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-        </div>`;
-      body.appendChild(row);
-    });
-    card.appendChild(body);
-    el.appendChild(card);
-  });
-
-  // Tick mỗi giây
-  function tick(){
-    const now=new Date();
-    const nowT=`${pad(now.getHours())}:${pad(now.getMinutes())}`;
-    Object.values(byRoom).sort((a,b)=>a.ten.localeCompare(b.ten,'vi',{numeric:true})).forEach(room=>{
-      let roomMoney=0;
-      room.rows.forEach(s=>{
-        const secs=Math.max(0,Math.floor((Date.now()-s.inTimestamp)/1000));
-        const mins=Math.floor(secs/60);
-        const money=calcMoney(mins,s.giaTien);
-        roomMoney+=money;
-        const tstr=document.getElementById('tstr-'+s.id);
-        const telap=document.getElementById('telap-'+s.id);
-        const tmoney=document.getElementById('tmoney-'+s.id);
-        if(tstr)tstr.innerHTML=`${esc(s.inTime)} <span style="color:var(--text3)">→</span> <span style="color:var(--green);font-weight:700">${nowT}</span>`;
-        if(telap){const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),sc=secs%60;telap.textContent=`${pad(h)}:${pad(m)}:${pad(sc)}`;}
-        if(tmoney)tmoney.textContent=fmtMoney(money);
-      });
-      const rt=document.getElementById('room-total-'+room.phongId);
-      if(rt)rt.textContent=`${room.rows.length} người • ${fmtMoney(roomMoney)}`;
-    });
-  }
-  tick();
-  if(startTimer){if(liveTimer)clearInterval(liveTimer);liveTimer=setInterval(tick,1000);}
-}
-
-async function doCheckOut(sessId){
-  const s=await dbGet('sessions',String(sessId));if(!s)return;
-  const outTime=nowStr();
-  const mins=calcMinsFromTs(s.inTimestamp);
-  const money=calcMoney(mins,s.giaTien);
-  await dbPut('logs',{id:uuid(),nvId:s.nvId,nvTen:s.nvTen,nvMa:s.nvMa,phongId:s.phongId,phongTen:s.phongTen,date:s.date,inTime:s.inTime,outTime,minutes:mins,giaTien:s.giaTien,money,weekKey:getWeekKey(s.date),status:'active',chotAt:null,createdAt:Date.now()});
-  await dbDel('sessions',sessId);
-  toast(`✅ ${s.nvTen} | ${fmtHrs(mins)} | ${fmtMoney(money)}`);
-  refreshHD(true);await autoSync();
-}
-
-async function checkoutRoom(phongId){
-  const sessions=await dbAll('sessions');
-  const roomSess=sessions.filter(s=>s.phongId===phongId);
-  if(!roomSess.length)return;
-  
-  for(const s of roomSess)await doCheckOutSilent(s);
-  toast(`✅ Đã check out cả phòng`);
-  refreshHD(true);autoSync();
-}
-
-async function doCheckOutSilent(s){
-  const outTime=nowStr();
-  const mins=calcMinsFromTs(s.inTimestamp);
-  const money=calcMoney(mins,s.giaTien);
-  await dbPut('logs',{id:uuid(),nvId:s.nvId,nvTen:s.nvTen,nvMa:s.nvMa,phongId:s.phongId,phongTen:s.phongTen,date:s.date,inTime:s.inTime,outTime,minutes:mins,giaTien:s.giaTien,money,weekKey:getWeekKey(s.date),status:'active',chotAt:null,createdAt:Date.now()});
-  await dbDel('sessions',s.id);
-}
-
-async function deleteSession(sessId){
-  if(!confirm('Xoá check in này?'))return;
-  await dbDel('sessions',String(sessId));
-  toast('🗑️ Đã xoá');refreshHD(true);updateBadge();autoSync();
-}
-
-async function deleteRoom(phongId){
-  if(!confirm('Xoá tất cả check in trong phòng này?'))return;
-  const sessions=await dbAll('sessions');
-  const roomSess=sessions.filter(s=>s.phongId===phongId);
-  for(const s of roomSess)await dbDel('sessions',s.id);
-  toast('🗑️ Đã xoá cả phòng');refreshHD(true);updateBadge();autoSync();
-}
-
-// ═══ BẢNG LƯƠNG ═══
-async function refreshLuong(){
-  const allLogs=await dbAll('logs');
-  allNVs=await dbAll('nhanvien');
-  const el=document.getElementById('luong-content');el.innerHTML='';
-  const {start,end}=getWeekRange();
-  document.getElementById('luong-week-label').textContent=currentWeekTab==='hientai'?`Tuần ${fmtDate(start)} – ${fmtDate(end)}`:'Tuần đã chốt';
-  const q=(document.getElementById('luong-search')?.value||'').toLowerCase().trim();
-
-  // Tính tổng chưa chốt tuần này (luôn tính, không phụ thuộc tab)
-  const curKey=getWeekKey(todayStr());
-  const unchotTotal=allLogs.filter(l=>l.weekKey===curKey&&l.status==='active').reduce((a,b)=>a+b.money,0);
-  const hdrEl=document.getElementById('luong-total-header');
-  if(hdrEl)hdrEl.textContent=fmtMoney(unchotTotal);
-
-  let logs=[];
-  if(currentWeekTab==='hientai'){
-    const curKey=getWeekKey(todayStr());
-    logs=allLogs.filter(l=>l.weekKey===curKey&&l.status==='active');
-  } else {
-    logs=allLogs.filter(l=>l.status==='chot');
-  }
-
-  // Filter by search
-  if(q)logs=logs.filter(l=>l.nvTen.toLowerCase().includes(q));
-
-  if(!logs.length){el.innerHTML=`<div class="empty-state"><p>${q?'Không tìm thấy nhân viên':'Chưa có dữ liệu'}</p></div>`;return;}
-
-  if(currentWeekTab==='hientai'){
-    groupNV(logs).forEach(g=>renderGroup(el,g,false));
-  } else {
-    const byW={};logs.forEach(l=>{if(!byW[l.weekKey])byW[l.weekKey]=[];byW[l.weekKey].push(l);});
-    Object.keys(byW).sort().reverse().forEach(wk=>{
-      const{start:ws,end:we}=getWeekRange(wk);
-      const lbl=document.createElement('div');lbl.className='wk-label';lbl.textContent=`Tuần ${fmtDate(ws)} – ${fmtDate(we)}`;el.appendChild(lbl);
-      groupNV(byW[wk]).forEach(g=>renderGroup(el,g,true));
-    });
+    totalEl.textContent = '--';
+    totalEl.className = 'result-total-val empty';
   }
 }
 
-function groupNV(logs){
-  const m={};logs.forEach(l=>{if(!m[l.nvId])m[l.nvId]={nvId:l.nvId,ten:l.nvTen,logs:[]};m[l.nvId].logs.push(l);});return Object.values(m);
+/* ── FORMAT GIÁ ── */
+function fmtGia(el){
+  const digits = el.value.replace(/[^0-9]/g,'');
+  const num = parseInt(digits) || 0;
+  el.value = num > 0 ? num.toLocaleString('vi-VN') : '';
+  calc();
 }
 
-function renderGroup(container,grp,isHist){
-  const tMins=grp.logs.reduce((a,b)=>a+b.minutes,0);
-  const tMoney=grp.logs.reduce((a,b)=>a+b.money,0);
-  const hdr=document.createElement('div');hdr.className='nv-group-hdr';
-  hdr.innerHTML=`<div class="nv-grp-name">${esc(grp.ten)}</div><div style="display:flex;align-items:center;gap:8px"><div class="nv-grp-total">${fmtMoney(tMoney)}</div><button class="btn btn-red" style="padding:4px 10px;font-size:11px;border-radius:6px" onclick="deleteAllLogsOfNV('${grp.nvId}','${esc(grp.ten)}')">Xoá tất cả</button></div>`;
-  container.appendChild(hdr);
-  const card=document.createElement('div');card.className='card';card.style.marginTop='0';
-  const sorted=[...grp.logs].sort((a,b)=>a.date.localeCompare(b.date)||a.inTime.localeCompare(b.inTime));
-  sorted.forEach(log=>{
-    const row=document.createElement('div');row.className='log-row';
-    row.innerHTML=`
-      <div class="log-date">${DAY[new Date(log.date+'T00:00:00').getDay()]}<br>${fmtDate(log.date)}</div>
-      <div class="log-body"><div class="log-room">${esc(log.phongTen)}</div><div class="log-times">${log.inTime} → ${log.outTime}</div><div class="log-hrs">${fmtHrs(log.minutes)}</div></div>
-      <div class="log-money-col">${fmtMoney(log.money)}</div>
-      <div class="log-confirm-wrap">
-        <input type="checkbox" class="log-confirm-cb" id="cb-${log.id}" onchange="toggleLogConfirm(this,'${log.id}')"${confirmedLogIds.has(log.id)?' checked':''}>
-        <div class="log-confirmed-label" id="cblbl-${log.id}" style="display:${confirmedLogIds.has(log.id)?'block':'none'}">✓ Xác nhận</div>
-      </div>
-      <div class="log-actions">
-        <button class="btn-icon" onclick="openEditLog('${log.id}')" aria-label="Sửa"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-        <button class="btn-icon" style="color:var(--red)" onclick="deleteLog('${log.id}')" aria-label="Xoá"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-      </div>`;
-    card.appendChild(row);
-  });
-  const tr=document.createElement('div');tr.className='total-row';
-  tr.innerHTML=`<span style="font-size:12px;color:var(--text2);font-weight:600">Tổng: ${fmtHrs(tMins)}</span><span style="font-size:14px;font-weight:800;color:var(--accent)">${fmtMoney(tMoney)}</span>`;
-  card.appendChild(tr);
-  if(!isHist){const btn=document.createElement('button');btn.className='btn-chot';btn.textContent=`Chốt lương – ${grp.ten}`;btn.onclick=()=>openChotLuong(grp.nvId,grp.logs[0].weekKey);card.appendChild(btn);}
-  container.appendChild(card);
-}
-
-function switchWeekTab(tab){
-  currentWeekTab=tab;
-  document.getElementById('tab-hientai').classList.toggle('active',tab==='hientai');
-  document.getElementById('tab-lichsu').classList.toggle('active',tab==='lichsu');
-  refreshLuong();
-}
-
-async function deleteAllLogsCurrentTab(){
-  const label=currentWeekTab==='hientai'?'tuần này':'lịch sử đã chốt';
-  if(!confirm(`Xoá TẤT CẢ ca làm của ${label}?\nThao tác này không thể hoàn tác.`))return;
-  const allLogs=await dbAll('logs');
-  let toDelete=[];
-  if(currentWeekTab==='hientai'){
-    const curKey=getWeekKey(todayStr());
-    toDelete=allLogs.filter(l=>l.weekKey===curKey&&l.status==='active');
-  } else {
-    toDelete=allLogs.filter(l=>l.status==='chot');
-  }
-  // Filter by search nếu có
-  const q=(document.getElementById('luong-search')?.value||'').toLowerCase().trim();
-  if(q)toDelete=toDelete.filter(l=>l.nvTen.toLowerCase().includes(q));
-  if(!toDelete.length){toast('Không có ca nào để xoá');return;}
-  for(const l of toDelete){await dbDel('logs',l.id);confirmedLogIds.delete(l.id);}
-  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
-  toast(`🗑️ Đã xoá ${toDelete.length} ca`);
-  refreshLuong();autoSync();
-}
-
-// ═══ EDIT LOG ═══
-// Sync direct number inputs → hidden field
-function syncTimeInput(which){
-  const h=parseInt(document.getElementById('edit-log-'+which+'-h').value)||0;
-  const m=parseInt(document.getElementById('edit-log-'+which+'-m').value)||0;
-  const hc=Math.max(0,Math.min(23,h)),mc=Math.max(0,Math.min(59,m));
-  const val=pad(hc)+':'+pad(mc);
-  const hidden=document.getElementById('edit-log-'+which);
-  if(hidden)hidden.value=val;
-  updateDayLabel(which,hc);
-  // KHÔNG gọi updPrev ở đây tránh vòng lặp
-}
-function updateDayLabel(which,h){
-  const dateEl=document.getElementById('edit-log-date');
-  if(!dateEl||!dateEl.value)return;
-  const dayEl=document.getElementById('edit-log-'+which+'-day');
-  if(!dayEl)return;
-  // Nếu giờ ra < giờ vào → gợi ý sang ngày hôm sau
-  if(which==='out'){
-    const inH=parseInt(document.getElementById('edit-log-in-h').value)||0;
-    if(h<inH){
-      const d=new Date(dateEl.value+'T00:00:00');d.setDate(d.getDate()+1);
-      const nextDate=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-      dayEl.innerHTML='<span style="color:var(--accent)">⚠️ Ca đêm → ra ngày '+DAY[d.getDay()]+' '+fmtDateFull(nextDate)+'</span>'
-        +'<button onclick="setOutDate()" style="margin-left:6px;background:var(--accent);color:#0f1923;border:none;border-radius:5px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit">Đổi sang ngày này</button>';
-    } else {
-      const d=new Date(dateEl.value+'T00:00:00');
-      dayEl.textContent='Ngày ra: '+DAY[d.getDay()]+' '+fmtDateFull(dateEl.value);
-    }
-  } else {
-    const d=new Date(dateEl.value+'T00:00:00');
-    dayEl.textContent='Ngày vào: '+DAY[d.getDay()]+' '+fmtDateFull(dateEl.value);
-  }
-}
-// Khi bấm "Đổi sang ngày này" cho ca đêm
-function setOutDate(){
-  const dateEl=document.getElementById('edit-log-date');
-  if(!dateEl||!dateEl.value)return;
-  const d=new Date(dateEl.value+'T00:00:00');d.setDate(d.getDate()+1);
-  // Lưu ngày ra riêng vào hidden field edit-log-out-date
-  const nextDate=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-  let outDateEl=document.getElementById('edit-log-out-date');
-  if(!outDateEl){outDateEl=document.createElement('input');outDateEl.type='hidden';outDateEl.id='edit-log-out-date';document.getElementById('modal-edit-log').appendChild(outDateEl);}
-  outDateEl.value=nextDate;
-  const dayEl=document.getElementById('edit-log-out-day');
-  const dObj=new Date(nextDate+'T00:00:00');
-  if(dayEl)dayEl.innerHTML='<span style="color:var(--green)">✅ Ra ngày '+DAY[dObj.getDay()]+' '+fmtDateFull(nextDate)+'</span>';
-}
-async function openEditLog(id){
-  const log=await dbGet('logs',String(id));if(!log)return;
-  document.getElementById('edit-log-id').value=id;
-  document.getElementById('edit-log-date').value=log.date;
-  const[ih,im]=log.inTime.split(':').map(Number);
-  const[oh,om]=log.outTime.split(':').map(Number);
-  // Set number inputs directly
-  document.getElementById('edit-log-in-h').value=ih;
-  document.getElementById('edit-log-in-m').value=pad(im);
-  document.getElementById('edit-log-out-h').value=oh;
-  document.getElementById('edit-log-out-m').value=pad(om);
-  // Sync hidden fields
-  document.getElementById('edit-log-in').value=log.inTime;
-  document.getElementById('edit-log-out').value=log.outTime;
-  document.getElementById('edit-log-gia').value=log.giaTien;
-  // Show day labels
-  updateDayLabel('in',ih);
-  updateDayLabel('out',oh);
-  openModal('modal-edit-log');initTimeInputs();updPrev();
-}
-function updPrev(){
-  // Lấy trực tiếp từ input số, không qua syncTimeInput để tránh vòng lặp
-  const ih=parseInt(document.getElementById('edit-log-in-h').value)||0;
-  const im=parseInt(document.getElementById('edit-log-in-m').value)||0;
-  const oh=parseInt(document.getElementById('edit-log-out-h').value)||0;
-  const om=parseInt(document.getElementById('edit-log-out-m').value)||0;
-  const i=pad(Math.max(0,Math.min(23,ih)))+':'+pad(Math.max(0,Math.min(59,im)));
-  const o=pad(Math.max(0,Math.min(23,oh)))+':'+pad(Math.max(0,Math.min(59,om)));
-  document.getElementById('edit-log-in').value=i;
-  document.getElementById('edit-log-out').value=o;
-  const g=parseInt(document.getElementById('edit-log-gia').value)||0;
-  if(g){const m=calcMinsFromStrings(i,o);document.getElementById('edit-log-preview').textContent=`${fmtHrs(m)} × ${fmtMoney(g)}/h = ${fmtMoney(calcMoney(m,g))}`;}
-}
-document.getElementById('edit-log-gia').addEventListener('input',updPrev);
-async function saveEditLog(){
-  updPrev(); // sync hidden fields trước khi lưu
-  const id=String(document.getElementById('edit-log-id').value);
-  const log=await dbGet('logs',id);if(!log)return;
-  const i=getTimeValue('edit-log-in'),o=getTimeValue('edit-log-out'),g=parseInt(document.getElementById('edit-log-gia').value)||0;
-  const date=document.getElementById('edit-log-date').value,m=calcMinsFromStrings(i,o);
-  await dbPut('logs',{...log,date,inTime:i,outTime:o,giaTien:g,minutes:m,money:calcMoney(m,g),weekKey:getWeekKey(date)});
-  closeModal('modal-edit-log');toast('✅ Đã cập nhật');refreshLuong();autoSync();
-}
-async function openEditRoomTime(phongId){
-  const sessions=await dbAll('sessions');
-  const roomSess=sessions.filter(s=>String(s.phongId)===String(phongId));
-  if(!roomSess.length){toast('Phòng không có ai đang làm');return;}
-  const now=new Date();
-  document.getElementById('edit-room-phongid').value=phongId;
-  document.getElementById('edit-room-label').textContent=roomSess[0].phongTen+' — '+roomSess.length+' người';
-  // Giờ ra mặc định = giờ hiện tại
-  document.getElementById('edit-room-out-h').value=pad(now.getHours());
-  document.getElementById('edit-room-out-m').value=pad(now.getMinutes());
-  setupTimeScroll(document.getElementById('edit-room-out-h'),0,23,null);
-  setupTimeScroll(document.getElementById('edit-room-out-m'),0,59,null);
-  openModal('modal-edit-room-time');
-}
-
-async function saveEditRoomTime(){
-  const phongId=document.getElementById('edit-room-phongid').value;
-  const oh=parseInt(document.getElementById('edit-room-out-h').value);
-  const om=parseInt(document.getElementById('edit-room-out-m').value);
-  if(isNaN(oh)||isNaN(om)){toast('⚠️ Nhập giờ ra');return;}
-  const outTime=pad(Math.max(0,Math.min(23,oh)))+':'+pad(Math.max(0,Math.min(59,om)));
-  const sessions=await dbAll('sessions');
-  const roomSess=sessions.filter(s=>String(s.phongId)===String(phongId));
-  for(const s of roomSess){
-    const mins=calcMinsFromStrings(s.inTime,outTime);
-    const money=calcMoney(mins,s.giaTien);
-    await dbPut('logs',{id:uuid(),nvId:s.nvId,nvTen:s.nvTen,nvMa:s.nvMa,phongId:s.phongId,phongTen:s.phongTen,date:s.date,inTime:s.inTime,outTime,minutes:mins,giaTien:s.giaTien,money,weekKey:getWeekKey(s.date),status:'active',chotAt:null,createdAt:Date.now()});
-    await dbDel('sessions',s.id);
-  }
-  closeModal('modal-edit-room-time');
-  toast('✅ Checkout '+roomSess.length+' người → ra '+outTime);
-  refreshHD(true);refreshLuong();
-  await autoSync();
-}
-
-async function openEditSessTime(sessId){
-  const s=await dbGet('sessions',String(sessId));
-  if(!s){toast('Không tìm thấy ca làm');return;}
-  const now=new Date();
-  document.getElementById('edit-sess-id').value=sessId;
-  document.getElementById('edit-sess-label').textContent=s.nvTen+' — vào '+s.inTime;
-  document.getElementById('edit-sess-out-h').value=pad(now.getHours());
-  document.getElementById('edit-sess-out-m').value=pad(now.getMinutes());
-  setupTimeScroll(document.getElementById('edit-sess-out-h'),0,23,null);
-  setupTimeScroll(document.getElementById('edit-sess-out-m'),0,59,null);
-  openModal('modal-edit-sess-time');
-}
-
-async function saveEditSessTime(){
-  const sessId=document.getElementById('edit-sess-id').value;
-  const oh=parseInt(document.getElementById('edit-sess-out-h').value);
-  const om=parseInt(document.getElementById('edit-sess-out-m').value);
-  if(isNaN(oh)||isNaN(om)){toast('⚠️ Nhập giờ ra');return;}
-  const outTime=pad(Math.max(0,Math.min(23,oh)))+':'+pad(Math.max(0,Math.min(59,om)));
-  const s=await dbGet('sessions',String(sessId));
-  if(!s)return;
-  const mins=calcMinsFromStrings(s.inTime,outTime);
-  const money=calcMoney(mins,s.giaTien);
-  await dbPut('logs',{id:uuid(),nvId:s.nvId,nvTen:s.nvTen,nvMa:s.nvMa,phongId:s.phongId,phongTen:s.phongTen,date:s.date,inTime:s.inTime,outTime,minutes:mins,giaTien:s.giaTien,money,weekKey:getWeekKey(s.date),status:'active',chotAt:null,createdAt:Date.now()});
-  await dbDel('sessions',sessId);
-  closeModal('modal-edit-sess-time');
-  toast('✅ '+s.nvTen+' | ra '+outTime+' | '+fmtHrs(mins)+' | '+fmtMoney(money));
-  refreshHD(true);await autoSync();
-}
-
-function toggleLogConfirm(cb,logId){
-  if(cb.checked)confirmedLogIds.add(logId);
-  else confirmedLogIds.delete(logId);
-  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
-  const lbl=document.getElementById('cblbl-'+logId);
-  if(lbl)lbl.style.display=cb.checked?'block':'none';
-}
-async function deleteLog(id){
-  if(!confirm('Xoá ca làm này?'))return;
-  await dbDel('logs',String(id));
-  confirmedLogIds.delete(id);
-  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
-  toast('🗑️ Đã xoá');refreshLuong();autoSync();
-}
-async function deleteAllLogsOfNV(nvId,ten){
-  if(!confirm(`Xoá tất cả ca của ${ten}?\nThao tác này không thể hoàn tác.`))return;
-  const allLogs=await dbAll('logs');
-  const toDelete=allLogs.filter(l=>l.nvId===nvId);
-  for(const l of toDelete){await dbDel('logs',l.id);confirmedLogIds.delete(l.id);}
-  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
-  toast('🗑️ Đã xoá '+toDelete.length+' ca của '+ten);
-  refreshLuong();autoSync();
-}
-
-// ═══ CHỐT LƯƠNG ═══
-async function openChotLuong(nvId,weekKey){
-  chotNvId=nvId;chotWeekKey=weekKey;
-  const allLogs=await dbAll('logs');
-  const logs=allLogs.filter(l=>l.nvId===nvId&&l.weekKey===weekKey&&l.status==='active');
-  const nv=allNVs.find(n=>n.id===nvId);
-  const tMins=logs.reduce((a,b)=>a+b.minutes,0),tMoney=logs.reduce((a,b)=>a+b.money,0);
-  const{start,end}=getWeekRange(weekKey);
-  document.getElementById('chot-preview').innerHTML=`
-    <div style="background:var(--bg3);border-radius:12px;padding:14px;margin-bottom:10px">
-      <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px">${esc(nv?.ten||'')}</div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Tuần ${fmtDate(start)} – ${fmtDate(end)}</div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="color:var(--text2);font-size:13px">Tổng giờ</span><span style="color:var(--text);font-weight:700">${fmtHrs(tMins)}</span></div>
-      <div style="display:flex;justify-content:space-between"><span style="color:var(--text2);font-size:13px">Tổng lương</span><span style="color:var(--accent);font-size:18px;font-weight:800">${fmtMoney(tMoney)}</span></div>
-    </div>
-    <div style="font-size:11px;color:var(--text3);text-align:center">Sẽ tạo ảnh để chia sẻ qua Zalo, Messenger...</div>`;
-  openModal('modal-chot');
-}
-
-async function doShareAnh(){
-  const allLogs=await dbAll('logs');
-  const logs=allLogs.filter(l=>l.nvId===chotNvId&&l.weekKey===chotWeekKey&&l.status==='active');
-  const nv=allNVs.find(n=>n.id===chotNvId);
-  if(!logs.length){toast('Không có dữ liệu');return;}
-  const nowTs=Date.now();
-  for(const log of logs)await dbPut('logs',{...log,status:'chot',chotAt:nowTs});
-  await cleanup();autoSync();closeModal('modal-chot');toast('Đang tạo ảnh...',3000);
-  setTimeout(async()=>{await shareAnh(nv,logs,chotWeekKey);currentWeekTab='lichsu';switchScreen('luong');},300);
-}
-
-async function shareAnh(nv,logs,weekKey){
-  const{start,end}=getWeekRange(weekKey);
-  const sorted=[...logs].sort((a,b)=>a.date.localeCompare(b.date)||a.inTime.localeCompare(b.inTime));
-  const tMins=logs.reduce((a,b)=>a+b.minutes,0),tMoney=logs.reduce((a,b)=>a+b.money,0);
-  const W=800,PAD=40,ROW=56,HDR=210,FOOT=150,H=HDR+sorted.length*ROW+FOOT;
-  const cv=document.createElement('canvas');cv.width=W*2;cv.height=H*2;
-  const cx=cv.getContext('2d');cx.scale(2,2);
-  cx.fillStyle='#f7f7f7';cx.fillRect(0,0,W,H);
-  cx.fillStyle='#0f1923';cx.fillRect(0,0,W,HDR);
-  cx.fillStyle='#e8a24e';cx.font='bold 13px system-ui,sans-serif';cx.textAlign='left';cx.fillText('CHAM CONG PRO',PAD,34);
-  cx.fillStyle='#e8a24e';cx.fillRect(PAD,42,60,2);
-  cx.fillStyle='#ffffff';cx.font='bold 26px system-ui,sans-serif';cx.fillText(nv.ten,PAD,80);
-  if(nv.sdt){cx.fillStyle='rgba(255,255,255,0.5)';cx.font='14px system-ui,sans-serif';cx.fillText(nv.sdt,PAD,103);}
-  cx.fillStyle='rgba(255,255,255,0.4)';cx.font='13px system-ui,sans-serif';cx.fillText(`Tuan: ${fmtDateFull(start)} - ${fmtDateFull(end)}`,PAD,126);
-  cx.textAlign='right';cx.fillStyle='rgba(255,255,255,0.4)';cx.font='12px system-ui,sans-serif';cx.fillText('TONG THUC LANH',W-PAD,68);
-  cx.fillStyle='#e8a24e';cx.font='bold 28px system-ui,sans-serif';cx.fillText(fmtMoney(tMoney),W-PAD,100);
-  cx.fillStyle='rgba(255,255,255,0.4)';cx.font='13px system-ui,sans-serif';cx.fillText(`Tong gio: ${fmtHrs(tMins)}`,W-PAD,122);cx.textAlign='left';
-  const ZW=18,ZH=10,ZC=Math.ceil(W/ZW)+1;
-  cx.fillStyle='#ffffff';cx.fillRect(0,HDR,W,H-HDR);
-  cx.fillStyle='#0f1923';cx.beginPath();cx.moveTo(0,HDR);
-  for(let i=0;i<ZC;i++){cx.lineTo(i*ZW+ZW/2,HDR+ZH/2);cx.lineTo((i+1)*ZW,HDR);}cx.closePath();cx.fill();
-  let y=HDR+ZH/2+28;
-  cx.fillStyle='#aaa';cx.font='bold 11px system-ui,sans-serif';
-  const C=[{l:'NGAY',x:PAD},{l:'PHONG',x:PAD+100},{l:'VAO',x:PAD+240},{l:'RA',x:PAD+320},{l:'GIO',x:PAD+400},{l:'TIEN',x:W-PAD,a:'right'}];
-  C.forEach(c=>{cx.textAlign=c.a||'left';cx.fillText(c.l,c.x,y);});cx.textAlign='left';
-  y+=6;cx.strokeStyle='#e8e8e8';cx.lineWidth=1;cx.beginPath();cx.moveTo(PAD,y);cx.lineTo(W-PAD,y);cx.stroke();
-  sorted.forEach((log,i)=>{
-    y+=ROW;if(i%2===1){cx.fillStyle='#fafafa';cx.fillRect(PAD-12,y-ROW+8,W-PAD*2+24,ROW);}
-    const dow=DAY[new Date(log.date+'T00:00:00').getDay()];
-    cx.fillStyle='#555';cx.font='13px system-ui,sans-serif';cx.textAlign='left';
-    cx.fillText(`${dow} ${fmtDate(log.date)}`,PAD,y-16);cx.fillText(log.phongTen,PAD+100,y-16);cx.fillText(log.inTime,PAD+240,y-16);cx.fillText(log.outTime,PAD+320,y-16);
-    cx.fillStyle='#888';cx.fillText(fmtHrs(log.minutes),PAD+400,y-16);
-    cx.fillStyle='#e8a24e';cx.font='bold 14px system-ui,sans-serif';cx.textAlign='right';cx.fillText(fmtMoney(log.money),W-PAD,y-16);cx.textAlign='left';
-    cx.strokeStyle='#f0f0f0';cx.lineWidth=0.5;cx.beginPath();cx.moveTo(PAD,y);cx.lineTo(W-PAD,y);cx.stroke();
-  });
-  y+=20;cx.fillStyle='#0f1923';cx.beginPath();cx.roundRect(PAD-12,y,W-PAD*2+24,90,10);cx.fill();
-  cx.fillStyle='rgba(255,255,255,0.5)';cx.font='13px system-ui,sans-serif';cx.textAlign='left';cx.fillText(`Tong gio lam: ${fmtHrs(tMins)}`,PAD,y+28);
-  cx.fillStyle='rgba(255,255,255,0.5)';cx.font='bold 12px system-ui,sans-serif';cx.textAlign='right';cx.fillText('TONG THUC LANH',W-PAD,y+28);
-  cx.fillStyle='#e8a24e';cx.font='bold 24px system-ui,sans-serif';cx.fillText(fmtMoney(tMoney),W-PAD,y+60);cx.textAlign='left';
-  cx.fillStyle='#bbb';cx.font='11px system-ui,sans-serif';cx.textAlign='center';cx.fillText(`Xuat: ${new Date().toLocaleString('vi-VN')}`,W/2,H-10);
-  cv.toBlob(blob=>{
-    const fname=`luong_${nv.ten.replace(/\s+/g,'_')}_${start}.png`;
-    const file=new File([blob],fname,{type:'image/png'});
-    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      navigator.share({title:`Bang luong - ${nv.ten}`,text:`${nv.ten} | ${fmtMoney(tMoney)}`,files:[file]}).catch(err=>{if(err.name!=='AbortError')fallbackDL(blob,fname);});
-    }else fallbackDL(blob,fname);
-  },'image/png',.95);
-}
-function fallbackDL(blob,fname){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=fname;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),5000);toast('Đã tải ảnh!');}
-
-async function cleanup(){/* TẮT TỰ XÓA: đã vô hiệu hóa xóa log cũ sau 14 ngày — giữ toàn bộ lịch sử */}
-
-// ═══ DANH MỤC ═══
-async function refreshDM(){
-  allNVs=await dbAll('nhanvien');allPhong=await dbAll('phong');loadSBConfigUI();
-  const el=document.getElementById('nv-list');
-  el.innerHTML=allNVs.length?allNVs.map(nv=>`
-    <div class="nv-card">
-      <div class="nv-avatar">${(nv.ten||'?').trim()[0].toUpperCase()}</div>
-      <div class="nv-info"><div class="nv-name">${esc(nv.ten)}</div><div class="nv-meta">${[nv.ma,nv.sdt].filter(Boolean).map(esc).join(' · ')}${(nv.ma||nv.sdt)?' · ':''}<span style="color:var(--accent)">${(nv.gia||0).toLocaleString('vi-VN')}d/h</span></div></div>
-      <div class="nv-actions">
-        <button class="btn-icon" onclick="editNV('${nv.id}')" aria-label="Sửa"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-        <button class="btn-icon" style="color:var(--red)" onclick="deleteNV('${nv.id}')" aria-label="Xoá"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-      </div>
-    </div>`).join('')
-  :`<div style="color:var(--text3);font-size:13px;padding:4px 0">Chưa có nhân viên nào</div>`;
-  const pel=document.getElementById('phong-list-dm');
-  pel.innerHTML=allPhong.map(p=>`<div class="phong-chip"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>${esc(p.ten)}<button class="del-x" onclick="deletePhong('${p.id}')">×</button></div>`).join('')||`<div style="color:var(--text3);font-size:13px">Chưa có phòng nào</div>`;
-}
-function openAddNV(){document.getElementById('modal-nv-title').textContent='Thêm nhân viên';['edit-nv-id','nv-ma','nv-ten','nv-sdt','nv-gia'].forEach(id=>document.getElementById(id).value='');openModal('modal-nv');}
-async function editNV(id){const nv=await dbGet('nhanvien',String(id));if(!nv)return;document.getElementById('modal-nv-title').textContent='Sửa nhân viên';document.getElementById('edit-nv-id').value=id;document.getElementById('nv-ma').value=nv.ma||'';document.getElementById('nv-ten').value=nv.ten||'';document.getElementById('nv-sdt').value=nv.sdt||'';document.getElementById('nv-gia').value=nv.gia||'';openModal('modal-nv');}
-async function saveNV(){const ten=document.getElementById('nv-ten').value.trim();if(!ten){toast('Nhập họ tên');return;}const id=document.getElementById('edit-nv-id').value;const obj={ma:document.getElementById('nv-ma').value.trim(),ten,sdt:document.getElementById('nv-sdt').value.trim(),gia:parseInt(document.getElementById('nv-gia').value)||0};if(id)obj.id=id;else obj.id=uuid();await dbPut('nhanvien',obj);closeModal('modal-nv');toast(`✅ Đã lưu ${ten}`);refreshDM();autoSync();}
-async function deleteNV(id){await dbDel('nhanvien',id);selNvIds.delete(id);toast('🗑️ Đã xoá');refreshDM();autoSync();}
-async function openAddPhong(){const name=prompt('Tên phòng:');if(name&&name.trim()){await dbPut('phong',{id:uuid(),ten:name.trim()});toast(`✅ Đã thêm ${name.trim()}`);refreshDM();autoSync();}}
-async function deletePhong(id){await dbDel('phong',id);toast('🗑️ Đã xoá phòng');refreshDM();autoSync();}
-
-// ═══ XẾP CA ENGINE ═══
-let xcState={};         // { [nvId]: { col, checkInTs, checkInTime, done, lateTime, lateNote } }
-let xcTickTimer=null;
-let xcDitrePendingNvId=null;
-let xcIsDraggingTouch=false;
-let xcTouchDragNvId=null;
-let xcGhostEl=null;
-
-function xcEnsureState(nvId){
-  if(!xcState[nvId])xcState[nvId]={col:'pool',checkInTs:null,checkInTime:null,done:false,lateTime:null,lateNote:''};
-  if(!xcState[nvId].lateTime)xcState[nvId].lateTime=null;
-  if(!xcState[nvId].lateNote)xcState[nvId].lateNote='';
-}
-
-async function xcSaveState(){
-  const arr=Object.entries(xcState).map(([nvId,s])=>({id:nvId,...s}));
-  const old=await dbAll('xepca_state');
-  for(const o of old)await dbDel('xepca_state',o.id);
-  for(const a of arr)await dbPut('xepca_state',a);
-  autoSync();
-}
-
-async function xcLoadState(){
-  const arr=await dbAll('xepca_state');
-  xcState={};
-  arr.forEach(a=>{const{id,...rest}=a;xcState[id]=rest;});
-}
-
-function xcUpdateDateLabel(){
-  const d=new Date();const days=['CN','T2','T3','T4','T5','T6','T7'];
-  const lbl=document.getElementById('xepca-date-label');
-  if(lbl)lbl.textContent=days[d.getDay()]+', '+pad(d.getDate())+'/'+(pad(d.getMonth()+1))+'/'+d.getFullYear();
-}
-
-function xcUpdateCounts(){
-  let pool=0,dilam=0,ditre=0,nghi=0;
-  allNVs.forEach(nv=>{
-    const col=(xcState[nv.id]&&xcState[nv.id].col)||'pool';
-    if(col==='dilam')dilam++;else if(col==='ditre')ditre++;else if(col==='nghi')nghi++;else pool++;
-  });
-  const s=id=>document.getElementById(id);
-  if(s('xc-pool-count'))s('xc-pool-count').textContent=pool>0?`(${pool})`:'';
-  if(s('xc-count-dilam'))s('xc-count-dilam').textContent=dilam;
-  if(s('xc-count-ditre'))s('xc-count-ditre').textContent=ditre;
-  if(s('xc-count-nghi'))s('xc-count-nghi').textContent=nghi;
-  const inf=document.getElementById('xepca-counts');
-  if(inf)inf.textContent='Làm: '+dilam+' • Trễ: '+ditre+' • Nghỉ: '+nghi;
-}
-
-function xcRenderAll(){
-  allNVs.forEach(nv=>xcEnsureState(nv.id));
-  ['pool','dilam','ditre','nghi'].forEach(z=>{const g=document.getElementById('xc-grid-'+z);if(g)g.innerHTML='';});
-  if(!allNVs.length){
-    const g=document.getElementById('xc-grid-pool');
-    if(g)g.innerHTML='<div style="color:var(--text3);font-size:12px;grid-column:1/-1;padding:4px">Vào Danh Mục → thêm nhân viên</div>';
-    xcUpdateCounts();return;
-  }
-  const buckets={pool:[],dilam:{active:[],inactive:[]},ditre:{active:[],inactive:[]},nghi:[]};
-  allNVs.forEach(nv=>{
-    const s=xcState[nv.id];const col=s.col||'pool';
-    if(col==='pool')buckets.pool.push(nv);
-    else if(col==='nghi')buckets.nghi.push(nv);
-    else if(col==='dilam'){const isA=s.checkInTs&&!s.done;if(isA)buckets.dilam.active.push(nv);else buckets.dilam.inactive.push(nv);}
-    else if(col==='ditre'){const isA=s.checkInTs&&!s.done;if(isA)buckets.ditre.active.push(nv);else buckets.ditre.inactive.push(nv);}
-  });
-  buckets.pool.forEach(nv=>{const g=document.getElementById('xc-grid-pool');if(g)g.appendChild(xcMakeChip(nv,'pool'));});
-  const gDilam=document.getElementById('xc-grid-dilam');
-  if(gDilam){buckets.dilam.active.forEach(nv=>gDilam.appendChild(xcMakeChip(nv,'dilam')));buckets.dilam.inactive.forEach(nv=>gDilam.appendChild(xcMakeChip(nv,'dilam')));}
-  const gDitre=document.getElementById('xc-grid-ditre');
-  if(gDitre){buckets.ditre.active.forEach(nv=>gDitre.appendChild(xcMakeChip(nv,'ditre')));buckets.ditre.inactive.forEach(nv=>gDitre.appendChild(xcMakeChip(nv,'ditre')));}
-  const gNghi=document.getElementById('xc-grid-nghi');
-  if(gNghi)buckets.nghi.forEach(nv=>gNghi.appendChild(xcMakeChip(nv,'nghi')));
-  xcUpdateCounts();xcStartTick();
-}
-
-function xcMakeChip(nv,colKey){
-  const el=document.createElement('div');
-  el.className='xc-chip';el.dataset.nvid=nv.id;el.dataset.col=colKey;el.draggable=true;
-  const s=xcState[nv.id];
-  const isActive=s&&s.checkInTs&&!s.done;
-  const isDone=s&&s.done&&s.checkInTs;
-  if(isActive)el.classList.add('active-session');
-  else if(isDone)el.classList.add('done-session');
-  el.innerHTML=`<span class="xc-chip-name">${esc(nv.ten)}</span><span class="xc-chip-timer" id="xc-timer-${nv.id}">00:00:00</span>`;
-  if(colKey==='dilam'||colKey==='ditre'){
-    let clickCount=0,clickTimer=null;
-    el.addEventListener('click',e=>{
-      if(xcIsDraggingTouch)return;
-      clickCount++;
-      if(clickCount===1){clickTimer=setTimeout(()=>{clickCount=0;xcToggleCheckin(nv.id);},260);}
-      else{clearTimeout(clickTimer);clickCount=0;if(colKey==='ditre'){xcOpenDitreView(nv.id);return;}xcToggleCheckin(nv.id);}
-    });
-  }
-  el.addEventListener('dragstart',e=>{e.dataTransfer.setData('xc-nvid',nv.id);el.classList.add('dragging');});
-  el.addEventListener('dragend',()=>el.classList.remove('dragging'));
-  xcSetupTouchDrag(el,nv.id);
-  return el;
-}
-
-function xcToggleCheckin(nvId){
-  const s=xcState[nvId];if(!s)return;
-  if(!s.checkInTs||s.done){s.checkInTs=Date.now();s.checkInTime=nowStr();s.done=false;toast('✅ Check in: '+allNVs.find(n=>n.id===nvId)?.ten);}
-  else{s.done=true;const secs=Math.max(0,Math.floor((Date.now()-s.checkInTs)/1000));const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),sc=secs%60;toast('⏹ Kết thúc: '+allNVs.find(n=>n.id===nvId)?.ten+` | ${pad(h)}:${pad(m)}:${pad(sc)}`);}
-  xcSaveState();xcRenderAll();
-}
-
-function xcStartTick(){
-  if(xcTickTimer)clearInterval(xcTickTimer);
-  xcTickTimer=setInterval(()=>{
-    allNVs.forEach(nv=>{
-      const s=xcState[nv.id];if(!s||!s.checkInTs||s.done)return;
-      const secs=Math.max(0,Math.floor((Date.now()-s.checkInTs)/1000));
-      const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),sc=secs%60;
-      const el=document.getElementById('xc-timer-'+nv.id);
-      if(el)el.textContent=`${pad(h)}:${pad(m)}:${pad(sc)}`;
-    });
-  },1000);
-}
-
-async function xcResetAll(){
-  if(!confirm('Reset tất cả xếp ca về chưa xếp?'))return;
-  allNVs.forEach(nv=>{xcState[nv.id]={col:'pool',checkInTs:null,checkInTime:null,done:false,lateTime:null,lateNote:''};});
-  await xcSaveState();xcRenderAll();toast('↺ Đã reset xếp ca');
-}
-
-// Drag-drop desktop
-function xcZoneDragOver(e,zone){e.preventDefault();document.getElementById('xc-zone-'+zone)?.classList.add('drag-over');}
-function xcZoneDragLeave(e,zone){document.getElementById('xc-zone-'+zone)?.classList.remove('drag-over');}
-async function xcZoneDrop(e,zone){
-  e.preventDefault();document.getElementById('xc-zone-'+zone)?.classList.remove('drag-over');
-  const nvId=e.dataTransfer.getData('xc-nvid');if(!nvId)return;
-  await xcMoveToZone(nvId,zone);
-}
-
-async function xcMoveToZone(nvId,zone){
-  xcEnsureState(nvId);const s=xcState[nvId];
-  if(s.col===zone)return;
-  if((s.col==='dilam'||s.col==='ditre')&&s.checkInTs&&!s.done)s.done=true;
-  if(zone==='pool'){s.checkInTs=null;s.checkInTime=null;s.done=false;s.lateTime=null;s.lateNote='';}
-  s.col=zone;
-  if(zone==='ditre'){await xcSaveState();xcRenderAll();xcOpenDitrePicker(nvId);return;}
-  await xcSaveState();xcRenderAll();
-}
-
-// Drum picker đi trễ
-function xcOpenDitrePicker(nvId){
-  const nv=allNVs.find(n=>n.id===nvId);if(!nv)return;
-  xcDitrePendingNvId=nvId;
-  document.getElementById('xc-ditre-name').textContent=nv.ten;
-  const s=xcState[nvId];
-  document.getElementById('xc-ditre-note').value=s.lateNote||'';
-  const now=new Date();
-  xcBuildDrum('xc-drum-h',24,now.getHours());xcBuildDrum('xc-drum-m',60,now.getMinutes());
-  document.getElementById('xc-modal-ditre').classList.remove('hidden');
-}
-
-function xcBuildDrum(colId,count,initVal){
-  const col=document.getElementById(colId);col.innerHTML='';
-  for(let i=0;i<count;i++){const d=document.createElement('div');d.className='xc-drum-item'+(i===initVal?' active-item':'');d.textContent=pad(i);d.dataset.val=i;col.appendChild(d);}
-  setTimeout(()=>{col.querySelectorAll('.xc-drum-item')[initVal]?.scrollIntoView({block:'center',behavior:'instant'});},30);
-  col.onscroll=()=>{const cy=col.scrollTop+col.clientHeight/2;let best=null,bd=Infinity;col.querySelectorAll('.xc-drum-item').forEach(item=>{const d=Math.abs(cy-item.offsetTop-22);if(d<bd){bd=d;best=item;}});col.querySelectorAll('.xc-drum-item').forEach(i=>i.classList.remove('active-item'));if(best)best.classList.add('active-item');};
-}
-
-function xcGetDrumValue(colId){const active=document.getElementById(colId).querySelector('.active-item');return active?parseInt(active.dataset.val):0;}
-
-function xcCloseDitreModal(){document.getElementById('xc-modal-ditre').classList.add('hidden');xcDitrePendingNvId=null;}
-
-async function xcConfirmDitre(){
-  if(!xcDitrePendingNvId)return;
-  const h=xcGetDrumValue('xc-drum-h');const m=xcGetDrumValue('xc-drum-m');
-  const note=document.getElementById('xc-ditre-note').value.trim();
-  const lateTime=`${pad(h)}:${pad(m)}`;
-  xcEnsureState(xcDitrePendingNvId);
-  xcState[xcDitrePendingNvId].lateTime=lateTime;xcState[xcDitrePendingNvId].lateNote=note;
-  document.getElementById('xc-modal-ditre').classList.add('hidden');
-  const nv=allNVs.find(n=>n.id===xcDitrePendingNvId);xcDitrePendingNvId=null;
-  await xcSaveState();xcRenderAll();toast(`⏰ ${nv?.ten||''} đi trễ lúc ${lateTime}${note?' — '+note:''}`);
-}
-
-function xcOpenDitreView(nvId){
-  const nv=allNVs.find(n=>n.id===nvId);const s=xcState[nvId];if(!nv||!s)return;
-  const content=document.getElementById('xc-ditre-view-content');
-  content.innerHTML=`
-    <div style="background:rgba(240,192,64,.08);border:1.5px solid rgba(240,192,64,.25);border-radius:12px;padding:14px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <div style="width:38px;height:38px;border-radius:50%;background:rgba(240,192,64,.25);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#f0c040">${(nv.ten||'?').trim()[0].toUpperCase()}</div>
-        <div><div style="font-size:15px;font-weight:800;color:var(--text)">${esc(nv.ten)}</div><div style="font-size:11px;color:#f0c040">Đi trễ</div></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid rgba(240,192,64,.15)">
-        <span style="font-size:12px;color:var(--text2)">Giờ đến thực tế</span>
-        <span style="font-size:18px;font-weight:800;color:#f0c040;font-variant-numeric:tabular-nums">${s.lateTime||'--:--'}</span>
-      </div>
-      <div style="padding:8px 0;border-top:1px solid rgba(240,192,64,.15)">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Lý do</div>
-        <div style="font-size:13px;color:var(--text)">${s.lateNote?esc(s.lateNote):'<span style="color:var(--text3);font-style:italic">Không có ghi chú</span>'}</div>
-      </div>
-    </div>
-    <button style="width:100%;margin-top:10px;background:rgba(240,192,64,.15);color:#f0c040;border:1.5px solid rgba(240,192,64,.3);border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" onclick="closeModal('xc-modal-ditre-view');xcOpenDitrePicker('${nvId}')">✏️ Chỉnh sửa</button>`;
-  openModal('xc-modal-ditre-view');
-}
-
-// Touch drag for Xếp Ca
-function xcSetupTouchDrag(el,nvId){
-  let startX,startY,longPressTimer=null,isDragging=false;
-  el.addEventListener('touchstart',e=>{
-    startX=e.touches[0].clientX;startY=e.touches[0].clientY;
-    longPressTimer=setTimeout(()=>{isDragging=true;xcIsDraggingTouch=true;xcTouchDragNvId=nvId;xcCreateGhost(el,startX,startY);},350);
-  },{passive:true});
-  el.addEventListener('touchmove',e=>{
-    if(!isDragging){const dx=e.touches[0].clientX-startX,dy=e.touches[0].clientY-startY;if(Math.abs(dx)>8||Math.abs(dy)>8){clearTimeout(longPressTimer);longPressTimer=null;}return;}
-    e.preventDefault();const tx=e.touches[0].clientX,ty=e.touches[0].clientY;
-    xcMoveGhost(tx,ty);xcHighlightDrop(tx,ty);
-  },{passive:false});
-  el.addEventListener('touchend',e=>{
-    clearTimeout(longPressTimer);longPressTimer=null;
-    if(!isDragging){isDragging=false;xcIsDraggingTouch=false;return;}
-    isDragging=false;xcIsDraggingTouch=false;
-    const tx=e.changedTouches[0].clientX,ty=e.changedTouches[0].clientY;
-    xcRemoveGhost();xcClearHighlights();
-    const target=xcGetDropTarget(tx,ty);
-    if(target&&xcTouchDragNvId)xcMoveToZone(xcTouchDragNvId,target);
-    xcTouchDragNvId=null;
-  },{passive:true});
-}
-function xcCreateGhost(el,x,y){if(xcGhostEl)xcGhostEl.remove();xcGhostEl=el.cloneNode(true);xcGhostEl.style.cssText=`position:fixed;z-index:999;pointer-events:none;opacity:.85;transform:scale(1.1) rotate(-2deg);left:${x-30}px;top:${y-16}px;min-width:60px;max-width:100px;`;document.body.appendChild(xcGhostEl);el.classList.add('dragging');}
-function xcMoveGhost(x,y){if(xcGhostEl){xcGhostEl.style.left=(x-30)+'px';xcGhostEl.style.top=(y-16)+'px';}}
-function xcRemoveGhost(){if(xcGhostEl){xcGhostEl.remove();xcGhostEl=null;}document.querySelectorAll('.xc-chip.dragging').forEach(e=>e.classList.remove('dragging'));}
-function xcHighlightDrop(x,y){xcClearHighlights();const t=xcGetDropTarget(x,y);if(t)document.getElementById('xc-zone-'+t)?.classList.add('drag-over');}
-function xcClearHighlights(){['pool','dilam','ditre','nghi'].forEach(k=>document.getElementById('xc-zone-'+k)?.classList.remove('drag-over'));}
-function xcGetDropTarget(x,y){for(const zone of['pool','dilam','ditre','nghi']){const el=document.getElementById('xc-zone-'+zone);if(!el)continue;const r=el.getBoundingClientRect();if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return zone;}return null;}
-
-// ═══ SUPABASE SYNC ENGINE ═══
-// Thay thế Firebase — không tự xóa data, free tier ổn định, không cần thẻ
-const SB_URL_KEY='sb_url';
-const SB_KEY_KEY='sb_key';
-// ⚠️ Điền URL và anon key Supabase của bạn vào đây sau khi tạo project
-const SB_URL_DEFAULT='https://jcrvyuetjqhfxcjfqmqb.supabase.co';
-const SB_ANON_DEFAULT='sb_publishable_mm3IMDrZvwhI1ozH6UZgsQ_mVgge6yn';
-function getSbUrl(){return localStorage.getItem(SB_URL_KEY)||SB_URL_DEFAULT;}
-function getSbKey(){return localStorage.getItem(SB_KEY_KEY)||SB_ANON_DEFAULT;}
-function sbHeaders(){return{'Content-Type':'application/json','apikey':getSbKey(),'Authorization':'Bearer '+getSbKey()};}
-
-function setSyncStatus(state){
-  const dot=document.getElementById('sync-dot');
-  const lbl=document.getElementById('sync-label');
-  if(!dot||!lbl)return;
-  const map={syncing:{c:'var(--accent)',t:'Đang sync...'},ok:{c:'var(--green)',t:'Đã đồng bộ'},err:{c:'var(--red)',t:'Lỗi sync'},offline:{c:'var(--text3)',t:'Offline'}};
-  const s=map[state]||map.offline;
-  dot.style.background=s.c;lbl.textContent=s.t;lbl.style.color=s.c;
-}
-
-// ── Supabase REST helpers ──
-async function sbGet(){
-  const r=await fetch(getSbUrl()+'/rest/v1/chamcong?id=eq.main&select=data,updated_at',{headers:sbHeaders()});
-  if(!r.ok)throw new Error('SB GET '+r.status);
-  const rows=await r.json();
-  return rows&&rows.length?rows[0]:null;
-}
-async function sbSet(data){
-  const r=await fetch(getSbUrl()+'/rest/v1/chamcong?id=eq.main',{
-    method:'PATCH',
-    headers:{...sbHeaders(),'Prefer':'return=minimal'},
-    body:JSON.stringify({data,updated_at:new Date().toISOString()})
-  });
-  if(!r.ok)throw new Error('SB SET '+r.status);
-}
-
-// ── Push toàn bộ local lên cloud ──
-async function pushToCloud(){
-  if(!navigator.onLine)return;
-  setSyncStatus('syncing');
-  try{
-    const nvs=await dbAll('nhanvien'),phong=await dbAll('phong');
-    const logs=await dbAll('logs'),sessions=await dbAll('sessions');
-    const xcArr=await dbAll('xepca_state');
-    const toObj=arr=>arr.reduce((o,x)=>{o[String(x.id)]=x;return o;},{});
-    const ts=Date.now();
-    await sbSet({
-      nhanvien:toObj(nvs),phong:toObj(phong),
-      logs:toObj(logs),sessions:toObj(sessions),
-      xepca_state:toObj(xcArr),ts
-    });
-    lastTs=ts;
-    setSyncStatus('ok');
-    console.log('[SB] pushToCloud OK ts='+ts);
-  }catch(e){setSyncStatus('err');console.error('[SB] pushToCloud ERR',e);}
-}
-
-// ── autoSync: push sau mỗi thao tác ──
-let isSyncing=false;
-async function autoSync(){
-  if(!navigator.onLine){setSyncStatus('offline');return;}
-  if(isSyncing)return;
-  isSyncing=true;
-  setSyncStatus('syncing');
-  try{
-    const nvs=await dbAll('nhanvien'),phong=await dbAll('phong');
-    const logs=await dbAll('logs'),sessions=await dbAll('sessions');
-    const xcArr=await dbAll('xepca_state');
-    const toObj=arr=>arr.reduce((o,x)=>{o[String(x.id)]=x;return o;},{});
-    const ts=Date.now();
-    await sbSet({
-      nhanvien:toObj(nvs),phong:toObj(phong),
-      logs:toObj(logs),sessions:toObj(sessions),
-      xepca_state:toObj(xcArr),ts
-    });
-    lastTs=ts;
-    setSyncStatus('ok');
-    console.log('[SB] autoSync OK ts='+ts+' sess='+sessions.length);
-  }catch(e){setSyncStatus('err');console.error('[SB] autoSync ERR',e);}
-  finally{isSyncing=false;}
-}
-
-// ── Pull từ cloud về local ──
-let lastTs=0;
-
-async function pullAndApply(force=false){
-  if(!navigator.onLine){setSyncStatus('offline');return false;}
-  try{
-    const row=await sbGet();
-    if(!row||!row.data)return false;
-    const data=row.data;
-    const cloudTs=data.ts||0;
-    if(!force&&cloudTs<=lastTs)return false;
-
-    const toArr=obj=>obj?Object.values(obj):[];
-    const cloudNVs=toArr(data.nhanvien);
-    const cloudPhong=toArr(data.phong);
-    const cloudLogs=toArr(data.logs);
-    const cloudSessions=toArr(data.sessions);
-    const cloudXC=toArr(data.xepca_state);
-
-    // ══ BẢO VỆ: không áp cloud nếu cloud trống mà local có dữ liệu ══
-    const localNVs=await dbAll('nhanvien');
-    const localLogs=await dbAll('logs');
-    const cloudIsEmpty=cloudNVs.length===0&&cloudLogs.length===0&&cloudSessions.length===0;
-    const localHasData=localNVs.length>0||localLogs.length>0;
-    if(cloudIsEmpty&&localHasData){
-      console.warn('[SB] Cloud trống nhưng local có dữ liệu → BỎ QUA pull, push local lên');
-      await pushToCloud();
-      return false;
-    }
-
-    // ══ Cloud có ít dữ liệu hơn local đáng kể → không áp ══
-    const localSessions=await dbAll('sessions');
-    const cloudRecordCount=cloudNVs.length+cloudLogs.length+cloudSessions.length;
-    const localRecordCount=localNVs.length+localLogs.length+localSessions.length;
-    if(!force&&localRecordCount>0&&cloudRecordCount<localRecordCount*0.5){
-      console.warn('[SB] Cloud ít dữ liệu hơn local 50% → BỎ QUA pull, push local lên');
-      await pushToCloud();
-      return false;
-    }
-
-    lastTs=cloudTs;
-
-    // ══ Nhanvien + Phong: cloud thắng ══
-    {const loc=await dbAll('nhanvien');for(const x of loc)await dbDel('nhanvien',x.id);}
-    for(const x of cloudNVs)await dbPut('nhanvien',x);
-    {const loc=await dbAll('phong');for(const x of loc)await dbDel('phong',x.id);}
-    for(const x of cloudPhong)await dbPut('phong',x);
-
-    // ══ Logs: merge — giữ log local chưa kịp sync ══
-    const localLogMap={};(await dbAll('logs')).forEach(l=>{localLogMap[l.id]=l;});
-    const cloudLogMap={};cloudLogs.forEach(l=>{cloudLogMap[l.id]=l;});
-    for(const id of Object.keys(cloudLogMap)){if(localLogMap[id])await dbDel('logs',id);}
-    for(const x of cloudLogs)await dbPut('logs',x);
-
-    // ══ Sessions: cloud là nguồn sự thật ══
-    {const loc=await dbAll('sessions');for(const x of loc)await dbDel('sessions',x.id);}
-    for(const x of cloudSessions)await dbPut('sessions',x);
-
-    // ══ Xếp ca state ══
-    {const loc=await dbAll('xepca_state');for(const x of loc)await dbDel('xepca_state',x.id);}
-    for(const x of cloudXC)await dbPut('xepca_state',x);
-
-    allNVs=await dbAll('nhanvien');
-    allPhong=await dbAll('phong');
-    await xcLoadState();
-    setSyncStatus('ok');
-    console.log('[SB] pullAndApply OK cloudTs='+cloudTs+' sessions='+cloudSessions.length);
-    return true;
-  }catch(e){setSyncStatus('err');console.error('[SB] pullAndApply ERR',e);return false;}
-}
-
-// ── Polling mỗi 3 giây ──
-let realtimeTimer=null;
-function startRealtime(){
-  if(realtimeTimer)clearInterval(realtimeTimer);
-  realtimeTimer=setInterval(async()=>{
-    if(!navigator.onLine){setSyncStatus('offline');return;}
-    if(isSyncing)return;
-    const changed=await pullAndApply();
-    if(changed){
-      const active=document.querySelector('.screen.active')?.id;
-      if(active==='screen-chamcong')refreshCC();
-      if(active==='screen-hoatdong')refreshHD(true);
-      if(active==='screen-xepca'){xcRenderAll();}
-      if(active==='screen-luong')refreshLuong();
-      if(active==='screen-danhmuc')refreshDM();
-      updateBadge();
-      toast('🔄 Cập nhật',1000);
-    }
-  },3000);
-}
-
-async function syncToCloud(){await pushToCloud();}
-async function syncFromCloud(){
-  lastTs=0;
-  const ok=await pullAndApply(true);
-  if(ok){allNVs=await dbAll('nhanvien');allPhong=await dbAll('phong');
-    await refreshCC();refreshDM();updateBadge();toast('✅ Đã tải từ cloud');}
-}
-function loadSBConfigUI(){}
-function getSyncConfig(){return {bin:'ok'};}
-
-// ═══ DEBUG / CÀI ĐẶT SYNC ═══
-async function debugSync(){
-  const el=document.getElementById('sync-debug-result');
-  if(el)el.remove();
-  const div=document.createElement('div');
-  div.id='sync-debug-result';
-  div.style.cssText='margin:0 12px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px;font-size:11px;font-family:monospace;color:var(--text2);line-height:1.9';
-  document.getElementById('nv-list').before(div);
-
-  let lines=[];
-  const lnv=await dbAll('nhanvien'),llogs=await dbAll('logs'),lsess=await dbAll('sessions');
-  lines.push('📱 LOCAL: '+lnv.length+' NV, '+llogs.length+' logs, '+lsess.length+' sess');
-  lines.push('🌐 Online: '+navigator.onLine);
-  lines.push('🔗 Supabase: '+getSbUrl().replace('https://','').slice(0,30));
-  lines.push('🕐 lastTs: '+new Date(lastTs).toLocaleTimeString('vi'));
-  if(navigator.onLine){
-    try{
-      const row=await sbGet();
-      if(!row||!row.data||!row.data.nhanvien){lines.push('☁️ CLOUD: Trống → bấm PUSH để khởi tạo');}
-      else{
-        const d=row.data;
-        const cnv=Object.values(d.nhanvien||{}).length;
-        const clogs=Object.values(d.logs||{}).length;
-        const csess=Object.values(d.sessions||{}).length;
-        lines.push('☁️ CLOUD: '+cnv+' NV, '+clogs+' logs, '+csess+' sess');
-        lines.push('🕐 Cloud ts: '+new Date(d.ts||0).toLocaleTimeString('vi'));
-        lines.push('📅 Cập nhật: '+new Date(row.updated_at).toLocaleString('vi'));
-        const ok=clogs===llogs.length&&csess===lsess.length&&cnv===lnv.length;
-        lines.push(ok?'✅ Khớp':'⚠️ Chưa khớp → bấm PUSH');
-      }
-    }catch(e){lines.push('❌ '+e.message);}
-  }
-  div.innerHTML=lines.map(l=>'<div>'+l+'</div>').join('')
-    +'<div style="margin-top:10px;display:flex;gap:6px">'
-    +'<button onclick="pushToCloud().then(()=>debugSync())" style="flex:1;background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">⬆️ PUSH</button>'
-    +'<button onclick="syncFromCloud().then(()=>debugSync())" style="flex:1;background:var(--accent);color:#0f1923;border:none;border-radius:7px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">⬇️ PULL</button>'
-    +'<button onclick="changeSbConfig()" style="background:var(--bg4);color:var(--text2);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">🔗 Đổi URL</button>'
-    +'</div>';
-}
-function changeSbConfig(){
-  const url=prompt('Supabase Project URL:',getSbUrl());
-  if(!url||!url.startsWith('https://'))return;
-  const key=prompt('Supabase Anon Key:',getSbKey());
-  if(!key)return;
-  localStorage.setItem(SB_URL_KEY,url.trim().replace(/\/$/,''));
-  localStorage.setItem(SB_KEY_KEY,key.trim());
-  lastTs=0;toast('✅ Đã lưu cấu hình Supabase');debugSync();
-}
-
-// ═══ SERVICE WORKER ═══
-function registerSW(){
-  if(!('serviceWorker' in navigator))return;
-  // Huỷ đăng ký tất cả SW cũ để tránh cache cũ
-  navigator.serviceWorker.getRegistrations().then(regs=>{
-    regs.forEach(reg=>reg.unregister());
-  });
-}
-
-// ═══ INIT ═══
-async function init(){
-  await openDB();await cleanup();
-  initTimeInputs();
-  const nd=new Date();setTimeValue('input-in',nd.getHours(),nd.getMinutes());syncCheckinTime();
-  setSyncStatus('offline');
-  await xcLoadState();
-  await refreshCC();await updateBadge();
-
-  if(navigator.onLine){
-    setSyncStatus('syncing');
-    try{
-      const row=await sbGet();
-      const cloudData=row?row.data:null;
-      const cloudNVCount=cloudData&&cloudData.nhanvien?Object.keys(cloudData.nhanvien).length:0;
-      const cloudLogCount=cloudData&&cloudData.logs?Object.keys(cloudData.logs).length:0;
-      const cloudHasData=cloudNVCount>0||cloudLogCount>0;
-      const localNVCheck=await dbAll('nhanvien');
-      const localLogCheck=await dbAll('logs');
-      const localHasData=localNVCheck.length>0||localLogCheck.length>0;
-
-      if(cloudHasData){
-        await pullAndApply(true);
-        await xcLoadState();
-      } else if(localHasData){
-        console.log('[INIT] Cloud trống, local có dữ liệu → push lên cloud');
-        await pushToCloud();
-      }
-      allNVs=await dbAll('nhanvien');allPhong=await dbAll('phong');
-      await refreshCC();await updateBadge();
-      setSyncStatus('ok');
-    }catch(e){console.error('[SYNC] Init error:',e);setSyncStatus('err');}
-  }
-
-  startRealtime();
-  window.addEventListener('online',()=>{startRealtime();autoSync();});
-  window.addEventListener('offline',()=>{
-    setSyncStatus('offline');
-    if(realtimeTimer){clearInterval(realtimeTimer);realtimeTimer=null;}
-  });
-  registerSW();
-}
-init();
+/* ── INIT ── */
+(function(){
+  document.getElementById('inp-gia').value = (200000).toLocaleString('vi-VN');
+  calc();
+})();
 </script>
 </body>
 </html>
