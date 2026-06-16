@@ -120,7 +120,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;backgroun
 .co-btn:active{background:var(--red2)}
 .room-footer{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px}
 /* BẢNG LƯƠNG */
-.week-tabs{display:flex;gap:7px;padding:0 12px 10px}
+.week-tabs{display:flex;flex-wrap:wrap;gap:7px;padding:0 12px 10px}
 .week-tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;border-radius:10px;cursor:pointer;border:1.5px solid var(--border);color:var(--text2);background:transparent;font-family:inherit}
 .week-tab.active{background:rgba(232,162,78,.12);border-color:var(--accent);color:var(--accent)}
 .search-wrap{padding:0 12px 8px;position:relative}
@@ -339,14 +339,16 @@ input[type=number]{-moz-appearance:textfield}
   <div class="page-header">
     <div><div class="page-title">Bảng Lương</div><div class="page-subtitle" id="luong-week-label"></div></div>
     <div style="text-align:right">
-      <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.04em;text-transform:uppercase" id="luong-hdr-label">CHƯA CHỐT</div>
+      <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.04em;text-transform:uppercase" id="luong-hdr-label">TỔNG LƯƠNG</div>
       <div style="font-size:18px;font-weight:800;color:var(--accent);letter-spacing:-.02em" id="luong-total-header">0d</div>
     </div>
   </div>
   <div class="week-tabs">
-    <button class="week-tab active" id="tab-hientai" onclick="switchWeekTab('hientai')">Chưa chốt</button>
+    <button class="week-tab active" id="tab-hientai" onclick="switchWeekTab('hientai')">Hiện tại</button>
     <button class="week-tab" id="tab-lichsu" onclick="switchWeekTab('lichsu')">Lịch sử</button>
-    <button onclick="xuatPDFBangLuong()" style="flex:0;white-space:nowrap;padding:8px 12px;font-size:12px;font-weight:700;border-radius:10px;cursor:pointer;border:1.5px solid rgba(76,175,130,.4);background:rgba(76,175,130,.1);color:var(--green);font-family:inherit">📄 PDF</button>
+    <button onclick="xuatPDFBangLuong()" style="flex:0;white-space:nowrap;padding:8px 10px;font-size:12px;font-weight:700;border-radius:10px;cursor:pointer;border:1.5px solid rgba(76,175,130,.4);background:rgba(76,175,130,.1);color:var(--green);font-family:inherit">📄 PDF</button>
+    <button onclick="xuatPDFToanBo()" style="flex:0;white-space:nowrap;padding:8px 10px;font-size:12px;font-weight:700;border-radius:10px;cursor:pointer;border:1.5px solid rgba(232,162,78,.5);background:rgba(232,162,78,.12);color:var(--accent);font-family:inherit">📦 Tất cả</button>
+    <button onclick="xoaToanBoTheoTab(currentWeekTab==='hientai'?'active':'chot')" style="flex:0;white-space:nowrap;padding:8px 10px;font-size:12px;font-weight:700;border-radius:10px;cursor:pointer;border:1.5px solid rgba(224,92,92,.45);background:rgba(224,92,92,.12);color:var(--red);font-family:inherit">🗑 Xoá hết</button>
   </div>
   <div class="search-wrap">
     <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -1026,49 +1028,23 @@ async function refreshLuong(){
   const filterQ = logs => q ? logs.filter(l => l.nvTen.toLowerCase().includes(q)) : logs;
 
   if(currentWeekTab === 'hientai'){
-    // Tab CHƯA CHỐT: tất cả log active, nhóm theo tuần
+    // Tab HIỆN TẠI: tất cả ca chưa chốt, gộp phẳng theo nhân viên (không chia tuần)
     const activeLogs = filterQ(activeAll);
 
-    // Tổng tất cả chưa chốt (hoặc theo tuần đang filter)
-    const weekKeys = [...new Set(activeLogs.map(l => l._wk))].sort().reverse();
-    const displayTotal = filterWeekKey
-      ? activeLogs.filter(l => l._wk === filterWeekKey).reduce((a,b) => a+b.money, 0)
-      : activeLogs.reduce((a,b) => a+b.money, 0);
+    const displayTotal = activeLogs.reduce((a,b) => a+b.money, 0);
     if(hdrEl){ hdrEl.textContent = fmtMoney(displayTotal); hdrEl.style.color = 'var(--accent)'; }
-    if(hdrLabel) hdrLabel.textContent = filterWeekKey ? getISOWeekLabel(filterWeekKey) : 'CHƯA CHỐT';
-
-    // Label subtitle
-    document.getElementById('luong-week-label').textContent = filterWeekKey
-      ? (() => { const {start:ws,end:we}=getWeekRange(filterWeekKey); return `${getISOWeekLabel(filterWeekKey)} (${fmtDate(ws)}–${fmtDate(we)})`; })()
-      : 'Tất cả chưa chốt';
+    if(hdrLabel) hdrLabel.textContent = 'TỔNG LƯƠNG';
+    document.getElementById('luong-week-label').textContent = 'Tất cả ca làm';
 
     if(!activeLogs.length){
       el.innerHTML = `<div class="empty-state"><p>${q?'Không tìm thấy':'Chưa có ca làm nào'}</p></div>`;
       return;
     }
 
-    // Chip lọc tuần
-    renderWeekChips(el, weekKeys, new Set(weekKeys));
-
-    // Log cần hiện
-    const showLogs = filterWeekKey ? activeLogs.filter(l => l._wk === filterWeekKey) : activeLogs;
-    if(!showLogs.length){
-      const emp=document.createElement('div');emp.className='empty-state';
-      emp.innerHTML='<p>Không có dữ liệu tuần này</p>';el.appendChild(emp);return;
-    }
-
-    // Nhóm theo tuần, tuần mới nhất lên trên
-    const byW = {};
-    showLogs.forEach(l => { if(!byW[l._wk]) byW[l._wk]=[]; byW[l._wk].push(l); });
-    Object.keys(byW).sort().reverse().forEach(wk => {
-      const {start:ws,end:we} = getWeekRange(wk);
-      const wkTotal = byW[wk].reduce((a,b)=>a+b.money,0);
-      const lbl = document.createElement('div'); lbl.className='wk-label';
-      lbl.style.cssText = 'display:flex;justify-content:space-between;align-items:center;color:var(--accent);border-left:3px solid var(--accent);padding-left:10px;margin:8px 12px 4px;font-size:12px;font-weight:700;';
-      lbl.innerHTML = `<span>${getISOWeekLabel(wk)} (${fmtDate(ws)}–${fmtDate(we)})</span><span style="color:var(--accent);font-size:13px;font-weight:800">${fmtMoney(wkTotal)}</span>`;
-      el.appendChild(lbl);
-      groupNV(byW[wk]).forEach(g => renderGroupUnchot(el, g, wk));
-    });
+    // Gộp phẳng theo nhân viên — người có tổng lương cao lên trên
+    groupNV(activeLogs)
+      .sort((a,b) => b.logs.reduce((s,l)=>s+l.money,0) - a.logs.reduce((s,l)=>s+l.money,0))
+      .forEach(g => renderGroupUnchot(el, g));
 
   } else {
     // Tab LỊCH SỬ: tất cả log đã chốt
@@ -1118,6 +1094,32 @@ function groupNV(logs){
   const m={};logs.forEach(l=>{if(!m[l.nvId])m[l.nvId]={nvId:l.nvId,ten:l.nvTen,logs:[]};m[l.nvId].logs.push(l);});return Object.values(m);
 }
 
+// ── Xóa hàng loạt theo tab (active = hiện tại, chot = lịch sử) ──
+function _renderXoaToanBo(el, status, label){
+  const wrap=document.createElement('div');
+  wrap.style.cssText='margin:20px 12px 8px;';
+  const b=document.createElement('button');
+  b.style.cssText='width:100%;background:rgba(224,92,92,.08);border:1.5px solid rgba(224,92,92,.35);color:var(--red);border-radius:12px;padding:13px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;';
+  b.textContent=label;
+  b.onclick=()=>xoaToanBoTheoTab(status);
+  wrap.appendChild(b);
+  el.appendChild(wrap);
+}
+
+async function xoaToanBoTheoTab(status){
+  const allLogs=await dbAll('logs');
+  const toDelete=allLogs.filter(l=>l.status===status);
+  if(!toDelete.length){toast('Không có dữ liệu để xoá');return;}
+  const ten = status==='active' ? 'TOÀN BỘ dữ liệu hiện tại' : 'TOÀN BỘ lịch sử đã chốt';
+  if(!confirm(`Xoá ${ten}?\n${toDelete.length} ca sẽ bị xoá vĩnh viễn.\nKHÔNG thể hoàn tác.`))return;
+  if(!confirm('Xác nhận lần cuối — bạn chắc chắn muốn xoá?'))return;
+  for(const l of toDelete){await dbDel('logs',l.id);confirmedLogIds.delete(l.id);}
+  localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
+  toast('🗑️ Đã xoá '+toDelete.length+' ca');
+  filterWeekKey=null;
+  refreshLuong();autoSync();
+}
+
 // Chips lọc tuần (tab Chưa chốt)
 function renderWeekChips(container, weekKeys, unchotSet){
   const wrap = document.createElement('div');
@@ -1162,8 +1164,8 @@ function renderWeekDropdown(container, weekKeys){
   container.appendChild(wrap);
 }
 
-// Render nhóm NV – Chưa chốt
-function renderGroupUnchot(container, grp, weekKey){
+// Render nhóm NV – Hiện tại (gộp phẳng, không chốt)
+function renderGroupUnchot(container, grp){
   const tMins=grp.logs.reduce((a,b)=>a+b.minutes,0);
   const tMoney=grp.logs.reduce((a,b)=>a+b.money,0);
   const hdr=document.createElement('div');hdr.className='nv-group-hdr';
@@ -1190,21 +1192,17 @@ function renderGroupUnchot(container, grp, weekKey){
   const tr=document.createElement('div');tr.className='total-row';
   tr.innerHTML=`<span style="font-size:12px;color:var(--text2);font-weight:600">Tổng: ${fmtHrs(tMins)}</span><span style="font-size:14px;font-weight:800;color:var(--accent)">${fmtMoney(tMoney)}</span>`;
   card.appendChild(tr);
-  // Nút hàng dưới: Chốt | Chia sẻ | Xóa
+  // Nút hàng dưới: Chia sẻ | Xóa
   const btnRow=document.createElement('div');btnRow.style.cssText='display:flex;gap:8px;margin-top:10px;';
-  const btnChot=document.createElement('button');btnChot.className='btn-chot';
-  btnChot.style.cssText='flex:2;margin:0;font-size:13px;padding:11px 8px;';
-  btnChot.textContent='✅ Chốt lương';
-  btnChot.onclick=()=>openChotLuong(grp.nvId, weekKey);
-  const btnShare=document.createElement('button');
-  btnShare.style.cssText='flex:0 0 48px;background:var(--bg3);border:1.5px solid var(--border2);color:var(--text2);border-radius:10px;padding:11px 6px;font-size:16px;cursor:pointer;';
-  btnShare.textContent='📤';btnShare.title='Chia sẻ ảnh';
-  btnShare.onclick=async()=>{const nv=allNVs.find(n=>n.id===grp.nvId)||{ten:grp.ten,sdt:''};await shareAnh(nv,grp.logs,weekKey);};
+  const btnShare=document.createElement('button');btnShare.className='btn-chot';
+  btnShare.style.cssText='flex:2;margin:0;font-size:13px;padding:11px 8px;background:linear-gradient(135deg,#4caf82,#2e7d56);';
+  btnShare.textContent='📤 Chia sẻ ảnh bảng lương';
+  btnShare.onclick=async()=>{const nv=allNVs.find(n=>n.id===grp.nvId)||{ten:grp.ten,sdt:''};await shareAnh(nv,grp.logs);};
   const btnDel=document.createElement('button');
   btnDel.style.cssText='flex:0 0 48px;background:rgba(224,92,92,.08);border:1.5px solid rgba(224,92,92,.3);color:var(--red);border-radius:10px;padding:11px 6px;font-size:16px;cursor:pointer;';
   btnDel.textContent='🗑';btnDel.title='Xóa tất cả ca';
   btnDel.onclick=()=>deleteAllLogsOfNV(grp.nvId,grp.ten);
-  btnRow.appendChild(btnChot);btnRow.appendChild(btnShare);btnRow.appendChild(btnDel);
+  btnRow.appendChild(btnShare);btnRow.appendChild(btnDel);
   card.appendChild(btnRow);
   container.appendChild(card);
 }
@@ -1300,8 +1298,9 @@ async function doShareAnh(){
   setTimeout(async()=>{await shareAnh(nv,logs,chotWeekKey);currentWeekTab='lichsu';switchWeekTabUI();refreshLuong();},300);
 }
 
-async function shareAnh(nv,logs,weekKey){
-  const{start,end}=getWeekRange(weekKey);
+async function shareAnh(nv,logs){
+  const _ds=logs.map(l=>l.date).sort();
+  const start=_ds[0], end=_ds[_ds.length-1];
   const sorted=[...logs].sort((a,b)=>a.date.localeCompare(b.date)||a.inTime.localeCompare(b.inTime));
   const tMins=logs.reduce((a,b)=>a+b.minutes,0),tMoney=logs.reduce((a,b)=>a+b.money,0);
   const W=800,PAD=40,ROW=56,HDR=210,FOOT=150,H=HDR+sorted.length*ROW+FOOT;
@@ -1313,7 +1312,7 @@ async function shareAnh(nv,logs,weekKey){
   cx.fillStyle='#e8a24e';cx.fillRect(PAD,42,60,2);
   cx.fillStyle='#ffffff';cx.font='bold 26px system-ui,sans-serif';cx.fillText(nv.ten,PAD,80);
   if(nv.sdt){cx.fillStyle='rgba(255,255,255,0.5)';cx.font='14px system-ui,sans-serif';cx.fillText(nv.sdt,PAD,103);}
-  cx.fillStyle='rgba(255,255,255,0.4)';cx.font='13px system-ui,sans-serif';cx.fillText(`Tuan: ${fmtDateFull(start)} - ${fmtDateFull(end)}`,PAD,126);
+  cx.fillStyle='rgba(255,255,255,0.4)';cx.font='13px system-ui,sans-serif';cx.fillText(`Tu ${fmtDateFull(start)} den ${fmtDateFull(end)}`,PAD,126);
   cx.textAlign='right';cx.fillStyle='rgba(255,255,255,0.4)';cx.font='12px system-ui,sans-serif';cx.fillText('TONG THUC LANH',W-PAD,68);
   cx.fillStyle='#e8a24e';cx.font='bold 28px system-ui,sans-serif';cx.fillText(fmtMoney(tMoney),W-PAD,100);
   cx.fillStyle='rgba(255,255,255,0.4)';cx.font='13px system-ui,sans-serif';cx.fillText(`Tong gio: ${fmtHrs(tMins)}`,W-PAD,122);cx.textAlign='left';
@@ -1668,42 +1667,32 @@ async function deleteAllLogsOfNV(nvId,ten){
 }
 
 
-async function xuatPDFBangLuong(){
-  const allLogs=await dbAll('logs');
-  const logsWithKey=allLogs.map(l=>{
-    const d=new Date(l.date+'T00:00:00');
-    const dow=d.getDay();
-    let wk=l.weekKey;
-    if(dow===1&&l.inTime<'08:00'){const prev=new Date(d);prev.setDate(d.getDate()-1);wk=getWeekKey(`${prev.getFullYear()}-${String(prev.getMonth()+1).padStart(2,'0')}-${String(prev.getDate()).padStart(2,'0')}`);}
-    return{...l,_wk:wk};
-  });
-  let logs=[],tieuDe='';
-  if(currentWeekTab==='hientai'){
-    logs=logsWithKey.filter(l=>l.status==='active');
-    if(filterWeekKey)logs=logs.filter(l=>l._wk===filterWeekKey);
-    tieuDe=filterWeekKey?`Bảng Lương Chưa Chốt – ${getISOWeekLabel(filterWeekKey)}`:'Bảng Lương – Tất Cả Chưa Chốt';
-  }else{
-    logs=logsWithKey.filter(l=>l.status==='chot');
-    if(filterWeekKey)logs=logs.filter(l=>l._wk===filterWeekKey);
-    tieuDe=filterWeekKey?`Bảng Lương – ${getISOWeekLabel(filterWeekKey)}`:'Bảng Lương – Lịch Sử Đã Chốt';
-  }
-  if(!logs.length){toast('Không có dữ liệu để xuất');return;}
+// ── Helper dựng & mở PDF bảng lương ──
+function _buildLuongPDF(logs, tieuDe, groupByWeek, win){
+  if(!logs.length){toast('Không có dữ liệu để xuất');if(win&&!win.closed)win.close();return;}
   const fmtM=v=>new Intl.NumberFormat('vi-VN').format(Math.round(v))+'đ';
   const fmtH=m=>{const h=Math.floor(m/60),mn=m%60;return h>0?(mn>0?`${h}h${mn}p`:`${h}h`):`${mn}p`;};
   const DAY_VN=['CN','T2','T3','T4','T5','T6','T7'];
+  const rowNV=g=>{
+    const sorted=[...g.logs].sort((a,b)=>a.date.localeCompare(b.date)||a.inTime.localeCompare(b.inTime));
+    const tM=sorted.reduce((a,b)=>a+b.minutes,0),tMoney=sorted.reduce((a,b)=>a+b.money,0);
+    let r=`<tr class="nv-hdr"><td colspan="5">${g.ten}</td></tr>`;
+    sorted.forEach(l=>{r+=`<tr><td>${DAY_VN[new Date(l.date+'T00:00:00').getDay()]} ${fmtDate(l.date)}</td><td>${l.phongTen||''}</td><td>${l.inTime}→${l.outTime}</td><td>${fmtH(l.minutes)}</td><td class="m">${fmtM(l.money)}</td></tr>`;});
+    r+=`<tr class="tot"><td colspan="3">Tổng ${g.ten}</td><td>${fmtH(tM)}</td><td class="m">${fmtM(tMoney)}</td></tr>`;
+    return r;
+  };
   let rows='';
-  const byW={};logs.forEach(l=>{if(!byW[l._wk])byW[l._wk]={};if(!byW[l._wk][l.nvId])byW[l._wk][l.nvId]={ten:l.nvTen,logs:[]};byW[l._wk][l.nvId].logs.push(l);});
-  Object.keys(byW).sort().reverse().forEach(wk=>{
-    const{start:ws,end:we}=getWeekRange(wk);
-    rows+=`<tr class="wk-hdr"><td colspan="5">📅 ${getISOWeekLabel(wk)} (${fmtDate(ws)}–${fmtDate(we)})</td></tr>`;
-    Object.values(byW[wk]).forEach(g=>{
-      const sorted=[...g.logs].sort((a,b)=>a.date.localeCompare(b.date));
-      const tM=sorted.reduce((a,b)=>a+b.minutes,0),tMoney=sorted.reduce((a,b)=>a+b.money,0);
-      rows+=`<tr class="nv-hdr"><td colspan="5">${g.ten}</td></tr>`;
-      sorted.forEach(l=>{rows+=`<tr><td>${DAY_VN[new Date(l.date+'T00:00:00').getDay()]} ${fmtDate(l.date)}</td><td>${l.phongTen||''}</td><td>${l.inTime}→${l.outTime}</td><td>${fmtH(l.minutes)}</td><td class="m">${fmtM(l.money)}</td></tr>`;});
-      rows+=`<tr class="tot"><td colspan="3">Tổng ${g.ten}</td><td>${fmtH(tM)}</td><td class="m">${fmtM(tMoney)}</td></tr>`;
+  if(groupByWeek){
+    const byW={};logs.forEach(l=>{if(!byW[l._wk])byW[l._wk]={};if(!byW[l._wk][l.nvId])byW[l._wk][l.nvId]={ten:l.nvTen,logs:[]};byW[l._wk][l.nvId].logs.push(l);});
+    Object.keys(byW).sort().reverse().forEach(wk=>{
+      const{start:ws,end:we}=getWeekRange(wk);
+      rows+=`<tr class="wk-hdr"><td colspan="5">📅 ${getISOWeekLabel(wk)} (${fmtDate(ws)}–${fmtDate(we)})</td></tr>`;
+      Object.values(byW[wk]).forEach(g=>rows+=rowNV(g));
     });
-  });
+  }else{
+    const byNV={};logs.forEach(l=>{if(!byNV[l.nvId])byNV[l.nvId]={ten:l.nvTen,logs:[]};byNV[l.nvId].logs.push(l);});
+    Object.values(byNV).sort((a,b)=>b.logs.reduce((s,l)=>s+l.money,0)-a.logs.reduce((s,l)=>s+l.money,0)).forEach(g=>rows+=rowNV(g));
+  }
   const tongTien=logs.reduce((a,b)=>a+b.money,0);
   const html=`<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>${tieuDe}</title>
 <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:11px;color:#111;padding:20px}
@@ -1724,10 +1713,38 @@ td{padding:5px 8px;border-bottom:1px solid #eee}
 </body></html>`;
   const blob=new Blob([html],{type:'text/html;charset=utf-8'});
   const url=URL.createObjectURL(blob);
-  const w=window.open(url,'_blank');
-  if(!w){const a=document.createElement('a');a.href=url;a.download='bang-luong.html';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('📄 Mở file bằng Chrome → In → Lưu PDF');}
-  else toast('📄 Bấm Ctrl+P → Lưu dưới dạng PDF');
-  setTimeout(()=>URL.revokeObjectURL(url),30000);
+  if(win && !win.closed){
+    win.location.href=url;
+    toast('📄 Đã mở bản in → bấm In rồi chọn "Lưu PDF"');
+  }else{
+    const w=window.open(url,'_blank');
+    if(!w){const a=document.createElement('a');a.href=url;a.download='bang-luong.html';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('📄 Đã tải file — mở bằng Chrome rồi In → Lưu PDF');}
+    else toast('📄 Bấm In (Ctrl/⌘+P) → Lưu PDF');
+  }
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+}
+
+// Nút 📄 PDF: xuất theo tab đang xem
+async function xuatPDFBangLuong(){
+  const win=window.open('','_blank');
+  const allLogs=await dbAll('logs');
+  if(currentWeekTab==='hientai'){
+    _buildLuongPDF(allLogs.filter(l=>l.status==='active'),'Bảng Lương – Hiện Tại',false,win);
+  }else{
+    const chot=allLogs.filter(l=>l.status==='chot').map(l=>{
+      const d=new Date(l.date+'T00:00:00');let wk=l.weekKey;
+      if(d.getDay()===1&&l.inTime<'08:00'){const p=new Date(d);p.setDate(d.getDate()-1);wk=getWeekKey(`${p.getFullYear()}-${String(p.getMonth()+1).padStart(2,'0')}-${String(p.getDate()).padStart(2,'0')}`);}
+      return{...l,_wk:wk};
+    });
+    _buildLuongPDF(chot,'Bảng Lương – Lịch Sử Đã Chốt',true,win);
+  }
+}
+
+// Nút 📦 Tất cả: xuất TOÀN BỘ dữ liệu (mọi nhân viên, cả chưa chốt lẫn đã chốt)
+async function xuatPDFToanBo(){
+  const win=window.open('','_blank');
+  const allLogs=await dbAll('logs');
+  _buildLuongPDF(allLogs,'Bảng Lương – Toàn Bộ',false,win);
 }
 
 
