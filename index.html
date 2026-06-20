@@ -19,7 +19,7 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;backgroun
   --bg:#0f1923;--bg2:#172130;--bg3:#1e2d3d;--bg4:#253545;--surface:#192130;
   --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);
   --text:#e8e0d5;--text2:#a09888;--text3:#5e5a52;
-  --accent:#e8a24e;--accent2:#d4894a;--green:#4caf82;--red:#e05c5c;--red2:#c44a4a;--yellow:#f0c040;
+  --accent:#e8a24e;--accent2:#d4894a;--green:#4caf82;--money:#3df58a;--red:#e05c5c;--red2:#c44a4a;--yellow:#f0c040;
   --radius:14px;--radius-sm:9px;--nav-h:62px;
   --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
   --extra-bot:20px;
@@ -130,11 +130,11 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;backgroun
 .wk-label{font-size:10px;color:var(--text3);padding:3px 16px 1px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
 .nv-group-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 16px 3px;border-top:1px solid var(--border);margin-top:3px}
 .nv-group-hdr:first-of-type{border-top:none;margin-top:0}
-.nv-grp-name{font-size:14px;font-weight:700;color:var(--text)}.nv-grp-total{font-size:13px;font-weight:700;color:var(--accent)}
+.nv-grp-name{font-size:14px;font-weight:700;color:var(--text)}.nv-grp-total{font-size:16px;font-weight:800;color:var(--money)}
 .log-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);gap:7px}.log-row:last-of-type{border-bottom:none}
 .log-date{font-size:10px;font-weight:700;color:var(--text3);width:30px;text-align:center;line-height:1.4;flex-shrink:0}
 .log-body{flex:1;min-width:0}.log-room{font-size:10px;color:var(--text3);margin-bottom:1px}.log-times{font-size:12px;font-weight:600;color:var(--text2)}.log-hrs{font-size:10px;color:var(--text3);margin-top:1px}
-.log-money-col{font-size:12px;font-weight:700;color:var(--accent);text-align:right;flex-shrink:0;min-width:48px}
+.log-money-col{font-size:14px;font-weight:800;color:var(--money);text-align:right;flex-shrink:0;min-width:48px}
 .log-actions{display:flex;gap:4px;flex-shrink:0}
 .total-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0 2px;border-top:1px solid var(--border);margin-top:2px}
 .btn-chot{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0f1923;padding:12px 16px;font-size:14px;font-weight:800;width:100%;border-radius:var(--radius);border:none;letter-spacing:.02em;cursor:pointer;margin-top:10px;font-family:inherit}
@@ -340,15 +340,12 @@ input[type=number]{-moz-appearance:textfield}
     <div><div class="page-title">Bảng Lương</div><div class="page-subtitle" id="luong-week-label"></div></div>
     <div style="text-align:right">
       <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.04em;text-transform:uppercase" id="luong-hdr-label">TỔNG LƯƠNG</div>
-      <div style="font-size:18px;font-weight:800;color:var(--accent);letter-spacing:-.02em" id="luong-total-header">0d</div>
+      <div style="font-size:23px;font-weight:800;color:var(--money);letter-spacing:-.02em" id="luong-total-header">0d</div>
     </div>
   </div>
   <div class="week-tabs">
-    <button class="week-tab active" id="tab-hientai" onclick="switchWeekTab('hientai')">Hiện tại</button>
-    <button class="week-tab" id="tab-lichsu" onclick="switchWeekTab('lichsu')">Lịch sử</button>
-    <button onclick="xuatPDFBangLuong()" style="flex:0;white-space:nowrap;padding:8px 10px;font-size:12px;font-weight:700;border-radius:10px;cursor:pointer;border:1.5px solid rgba(76,175,130,.4);background:rgba(76,175,130,.1);color:var(--green);font-family:inherit">📄 PDF</button>
-    <button onclick="xuatPDFToanBo()" style="flex:0;white-space:nowrap;padding:8px 10px;font-size:12px;font-weight:700;border-radius:10px;cursor:pointer;border:1.5px solid rgba(232,162,78,.5);background:rgba(232,162,78,.12);color:var(--accent);font-family:inherit">📦 Tất cả</button>
-    <button onclick="xoaToanBoTheoTab(currentWeekTab==='hientai'?'active':'chot')" style="flex:0;white-space:nowrap;padding:8px 10px;font-size:12px;font-weight:700;border-radius:10px;cursor:pointer;border:1.5px solid rgba(224,92,92,.45);background:rgba(224,92,92,.12);color:var(--red);font-family:inherit">🗑 Xoá hết</button>
+    <button onclick="xuatPDFBangLuong()" style="flex:1;white-space:nowrap;padding:9px 10px;font-size:12px;font-weight:700;border-radius:10px;cursor:pointer;border:1.5px solid rgba(76,175,130,.4);background:rgba(76,175,130,.1);color:var(--green);font-family:inherit">📄 PDF</button>
+    <button onclick="xoaToanBoTheoTab('active')" style="flex:1;white-space:nowrap;padding:9px 10px;font-size:12px;font-weight:700;border-radius:10px;cursor:pointer;border:1.5px solid rgba(224,92,92,.45);background:rgba(224,92,92,.12);color:var(--red);font-family:inherit">🗑 Xoá hết</button>
   </div>
   <div class="search-wrap">
     <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -966,10 +963,37 @@ async function checkoutRoom(phongId){
   const sessions=await dbAll('sessions');
   const roomSess=sessions.filter(s=>s.phongId===phongId);
   if(!roomSess.length)return;
-  
-  for(const s of roomSess)await doCheckOutSilent(s);
-  toast(`✅ Đã check out cả phòng`);
-  refreshHD(true);autoSync();
+
+  const ket=[];
+  for(const s of roomSess){
+    const r=await doCheckOutSilent(s);
+    ket.push(r);
+  }
+  const tong=ket.reduce((a,b)=>a+b.money,0);
+  showCheckoutSummary(ket,tong);
+  refreshHD(true);await autoSync();
+}
+
+// Popup tổng kết check out cả phòng — tự tắt sau 2.5s
+function showCheckoutSummary(items,tong){
+  const old=document.getElementById('co-summary');if(old)old.remove();
+  const ov=document.createElement('div');
+  ov.id='co-summary';
+  ov.style.cssText='position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);animation:fadeIn .15s ease;padding:24px;';
+  const rows=items.map(it=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(it.ten)}</span>
+      <span style="font-size:16px;font-weight:800;color:var(--money);white-space:nowrap">${fmtMoney(it.money)}</span>
+    </div>`).join('');
+  ov.innerHTML=`<div style="width:100%;max-width:340px;background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:18px 20px 16px;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+      <div style="font-size:15px;font-weight:800;color:var(--money);text-align:center;margin-bottom:12px">${items.length>1?'✅ Đã check out cả phòng':'✅ Đã check out'}</div>
+      <div style="max-height:46vh;overflow-y:auto">${rows}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;padding-top:10px;border-top:2px solid var(--border2)">
+        <span style="font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em">Tổng</span>
+        <span style="font-size:22px;font-weight:800;color:var(--money)">${fmtMoney(tong)}</span>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  setTimeout(()=>{ov.style.transition='opacity .25s';ov.style.opacity='0';setTimeout(()=>ov.remove(),260);},2500);
 }
 
 async function doCheckOutSilent(s){
@@ -978,12 +1002,14 @@ async function doCheckOutSilent(s){
   const money=calcMoney(mins,s.giaTien);
   await dbPut('logs',{id:uuid(),nvId:s.nvId,nvTen:s.nvTen,nvMa:s.nvMa,phongId:s.phongId,phongTen:s.phongTen,date:s.date,inTime:s.inTime,outTime,minutes:mins,giaTien:s.giaTien,money,weekKey:getWeekKey(s.date),status:'active',chotAt:null,createdAt:Date.now()});
   await dbDel('sessions',s.id);
+  return {ten:s.nvTen,money,mins};
 }
 
 async function deleteSession(sessId){
   if(!confirm('Xoá check in này?'))return;
   await dbDel('sessions',String(sessId));
-  toast('🗑️ Đã xoá');refreshHD(true);updateBadge();autoSync();
+  await autoSync();
+  toast('🗑️ Đã xoá');refreshHD(true);updateBadge();
 }
 
 async function deleteRoom(phongId){
@@ -991,7 +1017,8 @@ async function deleteRoom(phongId){
   const sessions=await dbAll('sessions');
   const roomSess=sessions.filter(s=>s.phongId===phongId);
   for(const s of roomSess)await dbDel('sessions',s.id);
-  toast('🗑️ Đã xoá cả phòng');refreshHD(true);updateBadge();autoSync();
+  await autoSync();
+  toast('🗑️ Đã xoá cả phòng');refreshHD(true);updateBadge();
 }
 
 // ═══ BẢNG LƯƠNG ═══
@@ -1032,7 +1059,7 @@ async function refreshLuong(){
     const activeLogs = filterQ(activeAll);
 
     const displayTotal = activeLogs.reduce((a,b) => a+b.money, 0);
-    if(hdrEl){ hdrEl.textContent = fmtMoney(displayTotal); hdrEl.style.color = 'var(--accent)'; }
+    if(hdrEl){ hdrEl.textContent = fmtMoney(displayTotal); hdrEl.style.color = 'var(--money)'; }
     if(hdrLabel) hdrLabel.textContent = 'TỔNG LƯƠNG';
     document.getElementById('luong-week-label').textContent = 'Tất cả ca làm';
 
@@ -1115,9 +1142,10 @@ async function xoaToanBoTheoTab(status){
   if(!confirm('Xác nhận lần cuối — bạn chắc chắn muốn xoá?'))return;
   for(const l of toDelete){await dbDel('logs',l.id);confirmedLogIds.delete(l.id);}
   localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
+  await autoSync();
   toast('🗑️ Đã xoá '+toDelete.length+' ca');
   filterWeekKey=null;
-  refreshLuong();autoSync();
+  refreshLuong();
 }
 
 // Chips lọc tuần (tab Chưa chốt)
@@ -1190,19 +1218,15 @@ function renderGroupUnchot(container, grp){
     card.appendChild(row);
   });
   const tr=document.createElement('div');tr.className='total-row';
-  tr.innerHTML=`<span style="font-size:12px;color:var(--text2);font-weight:600">Tổng: ${fmtHrs(tMins)}</span><span style="font-size:14px;font-weight:800;color:var(--accent)">${fmtMoney(tMoney)}</span>`;
+  tr.innerHTML=`<span style="font-size:12px;color:var(--text2);font-weight:600">Tổng: ${fmtHrs(tMins)}</span><span style="font-size:16px;font-weight:800;color:var(--money)">${fmtMoney(tMoney)}</span>`;
   card.appendChild(tr);
-  // Nút hàng dưới: Chia sẻ | Xóa
+  // Nút hàng dưới: chỉ Xóa (đã bỏ Chia sẻ)
   const btnRow=document.createElement('div');btnRow.style.cssText='display:flex;gap:8px;margin-top:10px;';
-  const btnShare=document.createElement('button');btnShare.className='btn-chot';
-  btnShare.style.cssText='flex:2;margin:0;font-size:13px;padding:11px 8px;background:linear-gradient(135deg,#4caf82,#2e7d56);';
-  btnShare.textContent='📤 Chia sẻ ảnh bảng lương';
-  btnShare.onclick=async()=>{const nv=allNVs.find(n=>n.id===grp.nvId)||{ten:grp.ten,sdt:''};await shareAnh(nv,grp.logs);};
   const btnDel=document.createElement('button');
-  btnDel.style.cssText='flex:0 0 48px;background:rgba(224,92,92,.08);border:1.5px solid rgba(224,92,92,.3);color:var(--red);border-radius:10px;padding:11px 6px;font-size:16px;cursor:pointer;';
-  btnDel.textContent='🗑';btnDel.title='Xóa tất cả ca';
+  btnDel.style.cssText='flex:1;background:rgba(224,92,92,.08);border:1.5px solid rgba(224,92,92,.3);color:var(--red);border-radius:10px;padding:11px 6px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;';
+  btnDel.textContent='🗑 Xóa tất cả ca';btnDel.title='Xóa tất cả ca';
   btnDel.onclick=()=>deleteAllLogsOfNV(grp.nvId,grp.ten);
-  btnRow.appendChild(btnShare);btnRow.appendChild(btnDel);
+  btnRow.appendChild(btnDel);
   card.appendChild(btnRow);
   container.appendChild(card);
 }
@@ -1232,28 +1256,22 @@ function renderGroupChot(container, grp, weekKey){
   tr.innerHTML=`<span style="font-size:12px;color:var(--text2);font-weight:600">Tổng: ${fmtHrs(tMins)}</span><span style="font-size:14px;font-weight:800;color:var(--green)">${fmtMoney(tMoney)}</span>`;
   card.appendChild(tr);
   const btnRow=document.createElement('div');btnRow.style.cssText='display:flex;gap:8px;margin-top:10px;';
-  const btnShare=document.createElement('button');btnShare.className='btn-chot';
-  btnShare.style.cssText='flex:2;margin:0;font-size:13px;padding:11px 8px;background:linear-gradient(135deg,#4caf82,#2e7d56);';
-  btnShare.textContent='📤 Chia sẻ ảnh bảng lương';
-  btnShare.onclick=async()=>{const nv=allNVs.find(n=>n.id===grp.nvId)||{ten:grp.ten,sdt:''};await shareAnh(nv,grp.logs,weekKey);};
   const btnDel=document.createElement('button');
-  btnDel.style.cssText='flex:0 0 48px;background:rgba(224,92,92,.08);border:1.5px solid rgba(224,92,92,.3);color:var(--red);border-radius:10px;padding:11px 6px;font-size:16px;cursor:pointer;';
-  btnDel.textContent='🗑';btnDel.onclick=()=>deleteAllLogsOfNV(grp.nvId,grp.ten);
-  btnRow.appendChild(btnShare);btnRow.appendChild(btnDel);
+  btnDel.style.cssText='flex:1;background:rgba(224,92,92,.08);border:1.5px solid rgba(224,92,92,.3);color:var(--red);border-radius:10px;padding:11px 6px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;';
+  btnDel.textContent='🗑 Xóa tất cả ca';btnDel.onclick=()=>deleteAllLogsOfNV(grp.nvId,grp.ten);
+  btnRow.appendChild(btnDel);
   card.appendChild(btnRow);
   container.appendChild(card);
 }
 
 function switchWeekTab(tab){
-  currentWeekTab=tab; filterWeekKey=null;
-  document.getElementById('tab-hientai').classList.toggle('active',tab==='hientai');
-  document.getElementById('tab-lichsu').classList.toggle('active',tab==='lichsu');
+  currentWeekTab='hientai'; filterWeekKey=null;
+  document.getElementById('tab-hientai')?.classList.add('active');
   refreshLuong();
 }
 
 function switchWeekTabUI(){
-  document.getElementById('tab-hientai').classList.toggle('active',currentWeekTab==='hientai');
-  document.getElementById('tab-lichsu').classList.toggle('active',currentWeekTab==='lichsu');
+  document.getElementById('tab-hientai')?.classList.add('active');
 }
 
 
@@ -1474,8 +1492,7 @@ function luongRenderChot(container,grp,weekKey){
 }
 
 function switchWeekTabUI(){
-  document.getElementById('tab-hientai').classList.toggle('active',currentWeekTab==='hientai');
-  document.getElementById('tab-lichsu').classList.toggle('active',currentWeekTab==='lichsu');
+  document.getElementById('tab-hientai')?.classList.add('active');
 }
 
 
@@ -1598,14 +1615,16 @@ async function saveEditRoomTime(){
   const outTime=pad(Math.max(0,Math.min(23,oh)))+':'+pad(Math.max(0,Math.min(59,om)));
   const sessions=await dbAll('sessions');
   const roomSess=sessions.filter(s=>String(s.phongId)===String(phongId));
+  const ket=[];
   for(const s of roomSess){
     const mins=calcMinsFromStrings(s.inTime,outTime);
     const money=calcMoney(mins,s.giaTien);
     await dbPut('logs',{id:uuid(),nvId:s.nvId,nvTen:s.nvTen,nvMa:s.nvMa,phongId:s.phongId,phongTen:s.phongTen,date:s.date,inTime:s.inTime,outTime,minutes:mins,giaTien:s.giaTien,money,weekKey:getWeekKey(s.date),status:'active',chotAt:null,createdAt:Date.now()});
     await dbDel('sessions',s.id);
+    ket.push({ten:s.nvTen,money,mins});
   }
   closeModal('modal-edit-room-time');
-  toast('✅ Checkout '+roomSess.length+' người → ra '+outTime);
+  showCheckoutSummary(ket,ket.reduce((a,b)=>a+b.money,0));
   refreshHD(true);refreshLuong();
   await autoSync();
 }
@@ -1637,8 +1656,8 @@ async function saveEditSessTime(){
   await dbPut('logs',{id:uuid(),nvId:s.nvId,nvTen:s.nvTen,nvMa:s.nvMa,phongId:s.phongId,phongTen:s.phongTen,date:s.date,inTime:s.inTime,outTime,minutes:mins,giaTien:s.giaTien,money,weekKey:getWeekKey(s.date),status:'active',chotAt:null,createdAt:Date.now()});
   await dbDel('sessions',sessId);
   closeModal('modal-edit-sess-time');
-  toast('✅ '+s.nvTen+' | ra '+outTime+' | '+fmtHrs(mins)+' | '+fmtMoney(money));
-  refreshHD(true);await autoSync();
+  showCheckoutSummary([{ten:s.nvTen,money,mins}],money);
+  refreshHD(true);refreshLuong();await autoSync();
 }
 
 
@@ -1654,7 +1673,8 @@ async function deleteLog(id){
   await dbDel('logs',String(id));
   confirmedLogIds.delete(id);
   localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
-  toast('🗑️ Đã xoá');refreshLuong();autoSync();
+  await autoSync();
+  toast('🗑️ Đã xoá');refreshLuong();
 }
 async function deleteAllLogsOfNV(nvId,ten){
   if(!confirm(`Xoá tất cả ca của ${ten}?\nThao tác này không thể hoàn tác.`))return;
@@ -1662,8 +1682,9 @@ async function deleteAllLogsOfNV(nvId,ten){
   const toDelete=allLogs.filter(l=>l.nvId===nvId);
   for(const l of toDelete){await dbDel('logs',l.id);confirmedLogIds.delete(l.id);}
   localStorage.setItem('confirmed_logs',JSON.stringify([...confirmedLogIds]));
+  await autoSync();
   toast('🗑️ Đã xoá '+toDelete.length+' ca của '+ten);
-  refreshLuong();autoSync();
+  refreshLuong();
 }
 
 
